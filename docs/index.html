@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Books Are Open</title>
+<meta name="description" content="An Italian potluck. Eight courses. Get your name in the book before somebody else takes your dish.">
+<meta name="theme-color" content="#0B0A09">
+
+<meta property="og:title" content="The Books Are Open">
+<meta property="og:description" content="An Italian potluck. Eight courses. Get your name in the book before somebody else takes your dish.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;1,6..96,400&family=Archivo:wght@400;500;600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<!-- The book. Filled in once the Worker is deployed. -->
+<script>window.POTLUCK_API = "";</script>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="frontis">
+  <div class="frontis-rule" aria-hidden="true"></div>
+
+  <p class="eyebrow" id="host-line">By invitation</p>
+
+  <h1 class="wordmark">
+    <span class="wordmark-a">The Books</span>
+    <span class="wordmark-b"><i>are</i></span>
+    <span class="wordmark-c">Open</span>
+  </h1>
+
+  <p class="dek" id="party-line">An Italian potluck, done properly.</p>
+
+  <dl class="particulars" id="particulars"></dl>
+
+  <div class="tally" id="tally" aria-live="polite">
+    <span class="tally-count"><span id="tally-num">&mdash;</span> of <span id="tally-total">&mdash;</span></span>
+    <span class="tally-label">courses spoken for</span>
+  </div>
+
+  <div class="frontis-rule frontis-rule-b" aria-hidden="true"></div>
+</header>
+
+<main>
+  <p class="preamble">
+    Eight courses, one table. Some go to a couple, some to one person.
+    Put your name down and nobody brings the same thing twice.
+  </p>
+
+  <ol class="courses" id="courses"></ol>
+
+  <section class="handled" aria-label="Already handled">
+    <h2 class="handled-title">Already handled</h2>
+    <p class="handled-body">
+      Decorations and setup are covered. Tablecloth, candles, a few small touches.
+      One of the main dishes is covered too.
+    </p>
+    <p class="handled-sig" id="handled-sig">&mdash; the house</p>
+  </section>
+
+  <footer class="colophon">
+    <p>No time to cook is not a problem. Bring something good from a store, or put money toward a dish. Say so when you put your name down.</p>
+    <p class="colophon-mark">&#10022;</p>
+  </footer>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+name = "seat-at-the-table"
+main = "src/index.js"
+compatibility_date = "2025-06-01"
+
+# One Durable Object holds the whole book. Single-threaded, so the last
+# seat can only be taken once.
+[[durable_objects.bindings]]
+name = "BOOK"
+class_name = "Book"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Book"]

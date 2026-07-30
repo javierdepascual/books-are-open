@@ -1,0 +1,631 @@
+/* ============================================================
+   A Seat at the Table — an Italian potluck ledger
+   Palette   nero / carbone / oro / oro chiaro / sangue / crema
+   Display   Bodoni Moda   (Giambattista Bodoni, Parma, 1798)
+   Record    Courier Prime (what gets typed into the book)
+   Utility   Archivo       (labels, quiet)
+   ============================================================ */
+
+:root {
+  --nero:        #0B0908;
+  --carbone:     #17130F;
+  --carbone-alto:#221C16;
+  --oro:         #B08D3F;
+  --oro-chiaro:  #E3C878;
+  --sangue:      #7C2323;
+  --sangue-vivo: #A33232;
+  --crema:       #EDE4CF;
+  --crema-scura: #DED2B6;
+  --fumo:        #8B8074;
+  --inchiostro:  #1A1512;
+
+  --shell: min(45rem, 100% - 2.25rem);
+
+  --step--2: clamp(0.66rem, 0.62rem + 0.2vw, 0.74rem);
+  --step--1: clamp(0.78rem, 0.74rem + 0.22vw, 0.88rem);
+  --step-0:  clamp(0.95rem, 0.9rem + 0.25vw, 1.05rem);
+  --step-1:  clamp(1.2rem, 1.1rem + 0.5vw, 1.5rem);
+  --step-2:  clamp(1.6rem, 1.35rem + 1.2vw, 2.4rem);
+  --step-3:  clamp(2.6rem, 1.9rem + 3.4vw, 5.2rem);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--nero);
+  color: var(--crema);
+  font-family: "Archivo", system-ui, sans-serif;
+  font-size: var(--step-0);
+  line-height: 1.6;
+  overflow-x: hidden;
+  /* a faint pool of light over the table, top-centre */
+  background-image: radial-gradient(120% 70% at 50% -10%, #1E1813 0%, var(--nero) 62%);
+  background-attachment: fixed;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+:focus-visible {
+  outline: 2px solid var(--oro-chiaro);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* ---------------------------------------------------------- frontispiece */
+
+.frontis {
+  width: var(--shell);
+  margin-inline: auto;
+  padding-block: clamp(3rem, 9vw, 6.5rem) clamp(2rem, 6vw, 3.5rem);
+  text-align: center;
+}
+
+.frontis-rule {
+  height: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--oro) 55%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--oro) 55%, transparent);
+  margin-bottom: 2.4rem;
+}
+.frontis-rule-b { margin: 2.8rem 0 0; }
+
+.eyebrow {
+  margin: 0 0 1.6rem;
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--oro);
+}
+
+.wordmark {
+  margin: 0;
+  font-family: "Bodoni Moda", Didot, serif;
+  font-weight: 400;
+  font-size: var(--step-3);
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  color: var(--crema);
+  display: grid;
+  gap: 0.06em;
+}
+.wordmark-b {
+  font-style: italic;
+  font-size: 0.46em;
+  color: var(--oro-chiaro);
+  letter-spacing: 0.02em;
+}
+.wordmark-b i { font-style: italic; }
+.wordmark-c { font-weight: 700; }
+
+.dek {
+  margin: 1.5rem auto 0;
+  max-width: 26ch;
+  font-family: "Bodoni Moda", serif;
+  font-style: italic;
+  font-size: var(--step-1);
+  line-height: 1.35;
+  color: var(--crema-scura);
+}
+
+.particulars {
+  margin: 2.2rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 2.2rem;
+  font-family: "Courier Prime", ui-monospace, monospace;
+  font-size: var(--step--1);
+}
+.particulars div { display: grid; gap: 0.15rem; }
+.particulars dt {
+  font-family: "Archivo", sans-serif;
+  font-size: var(--step--2);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--fumo);
+}
+.particulars dd { margin: 0; color: var(--crema); }
+
+.tally {
+  margin-top: 2.4rem;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.5rem 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--oro) 40%, transparent);
+}
+.tally-count {
+  font-family: "Bodoni Moda", serif;
+  font-size: var(--step-1);
+  color: var(--oro-chiaro);
+  font-variant-numeric: tabular-nums;
+}
+.tally-label {
+  font-size: var(--step--2);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--fumo);
+}
+
+/* ---------------------------------------------------------- body */
+
+main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
+
+.preamble {
+  max-width: 46ch;
+  margin: 0 auto clamp(2.5rem, 7vw, 4rem);
+  text-align: center;
+  color: var(--fumo);
+  font-size: var(--step-0);
+}
+
+.courses { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; }
+
+/* ---------------------------------------------------------- the card */
+
+.course {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--oro) 32%, transparent);
+  background: linear-gradient(178deg, var(--carbone-alto), var(--carbone));
+  padding: 1.5rem 1.35rem 1.35rem;
+  transition: border-color 0.5s var(--ease), background 0.6s var(--ease);
+}
+/* the inner keyline — an engraved menu card */
+.course::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid color-mix(in srgb, var(--oro) 16%, transparent);
+  pointer-events: none;
+  transition: border-color 0.6s var(--ease);
+}
+
+.course.is-printed {
+  background: var(--crema);
+  color: var(--inchiostro);
+  border-color: #C4B48C;
+  box-shadow: 0 14px 34px -22px #000;
+}
+.course.is-printed::before { border-color: color-mix(in srgb, var(--sangue) 22%, transparent); }
+.course.is-printed .numeral { color: var(--sangue); }
+.course.is-printed .course-name { color: var(--inchiostro); }
+.course.is-printed .course-gloss,
+.course.is-printed .option { color: #5C5145; }
+.course.is-printed .option-rule { border-bottom-color: #B6A986; }
+.course.is-printed .options-head { color: #7A6E5C; }
+
+.course-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.1em;
+}
+
+/* One credit line: numeral, what the course is, and its state. */
+.credit {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.numeral {
+  flex-shrink: 0;
+  font-family: "Bodoni Moda", serif;
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
+  color: var(--oro);
+}
+
+.course-gloss {
+  font-size: var(--step--2);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fumo);
+  line-height: 1.35;
+}
+
+.course-name {
+  margin: 0.55rem 0 0;
+  font-family: "Bodoni Moda", serif;
+  font-weight: 400;
+  font-size: var(--step-2);
+  line-height: 1.02;
+  letter-spacing: 0.005em;
+  color: var(--crema);
+}
+
+.status {
+  flex-shrink: 0;
+  align-self: flex-start;
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 0.42em 0.85em;
+  border: 1px solid currentColor;
+  color: var(--oro);
+  white-space: nowrap;
+}
+.status[data-state="open"]    { color: var(--oro); }
+.status[data-state="partial"] { color: var(--sangue-vivo); }
+.status[data-state="full"]    { color: var(--sangue); background: color-mix(in srgb, var(--sangue) 10%, transparent); }
+
+/* ---------------------------------------------------------- the menu lines */
+
+.options { margin: 1.4rem 0 0; padding: 0; list-style: none; }
+.options-head {
+  margin: 0 0 0.7rem;
+  font-size: var(--step--2);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--fumo);
+}
+.option {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.24rem 0;
+  font-size: var(--step--1);
+  color: var(--crema-scura);
+}
+.option-rule {
+  flex: 1;
+  border-bottom: 1px dotted color-mix(in srgb, var(--oro) 34%, transparent);
+  transform: translateY(-0.25em);
+}
+.option-mark {
+  font-family: "Bodoni Moda", serif;
+  color: var(--oro);
+  opacity: 0.6;
+}
+.course.is-printed .option-mark { color: var(--sangue); opacity: 0.5; }
+
+/* ---------------------------------------------------------- the record */
+
+.record { margin: 1.5rem 0 0; display: grid; gap: 0.9rem; }
+
+.seat {
+  position: relative;
+  border-top: 1px solid color-mix(in srgb, var(--oro) 28%, transparent);
+  padding-top: 0.85rem;
+}
+.course.is-printed .seat { border-top-color: #C1B18A; }
+
+.seat-name {
+  margin: 0;
+  font-family: "Courier Prime", monospace;
+  font-weight: 700;
+  font-size: var(--step-0);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.seat-dish {
+  margin: 0.15rem 0 0;
+  font-family: "Bodoni Moda", serif;
+  font-style: italic;
+  font-size: var(--step-1);
+  line-height: 1.2;
+}
+.seat-note {
+  margin: 0.4rem 0 0;
+  font-family: "Courier Prime", monospace;
+  font-size: var(--step--1);
+  color: #5C5145;
+}
+.seat-mode {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: var(--step--2);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sangue);
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.15em;
+}
+
+.seat-empty {
+  font-family: "Archivo", sans-serif;
+  font-size: var(--step--1);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fumo);
+}
+.course.is-printed .seat-empty { color: #8C7F68; }
+
+.seat-strike {
+  margin-top: 0.7rem;
+  background: none;
+  border: 0;
+  padding: 0.2rem 0;
+  font-family: "Archivo", sans-serif;
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  color: #A2957C;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: block;
+}
+.seat-strike:hover { color: var(--sangue); }
+
+/* ---------------------------------------------------------- the seal */
+
+.seal {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  width: clamp(92px, 26vw, 128px);
+  height: auto;
+  color: var(--sangue);
+  opacity: 0.58;
+  transform: rotate(-11deg);
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+.seal-ring, .seal-mid {
+  font-family: "Archivo", sans-serif;
+  font-size: 8.4px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  fill: currentColor;
+}
+.seal-numeral {
+  font-family: "Bodoni Moda", serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  fill: currentColor;
+}
+
+@keyframes stamp-down {
+  0%   { opacity: 0; transform: rotate(-11deg) scale(2.1); }
+  55%  { opacity: 0.85; transform: rotate(-11deg) scale(0.94); }
+  75%  { transform: rotate(-11deg) scale(1.04); }
+  100% { opacity: 0.72; transform: rotate(-11deg) scale(1); }
+}
+.seal.is-fresh { animation: stamp-down 0.42s var(--ease) both; }
+
+/* ---------------------------------------------------------- actions */
+
+.course-action { margin-top: 1.4rem; }
+
+.put-name {
+  width: 100%;
+  background: none;
+  border: 1px solid var(--oro);
+  color: var(--oro-chiaro);
+  font-family: "Archivo", sans-serif;
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  padding: 0.95rem 1rem;
+  cursor: pointer;
+  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+}
+.put-name:hover { background: var(--oro); color: var(--nero); }
+.course.is-printed .put-name { border-color: var(--sangue); color: var(--sangue); }
+.course.is-printed .put-name:hover { background: var(--sangue); color: var(--crema); }
+
+/* ---------------------------------------------------------- the form */
+
+.claim-form {
+  margin-top: 1.3rem;
+  border-top: 1px solid color-mix(in srgb, var(--oro) 30%, transparent);
+  padding-top: 1.3rem;
+  display: grid;
+  gap: 1.25rem;
+}
+.course.is-printed .claim-form { border-top-color: #C1B18A; }
+
+.field { display: grid; gap: 0.5rem; }
+.field-label {
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--fumo);
+}
+.course.is-printed .field-label { color: #7A6E5C; }
+
+.field input[type="text"] {
+  width: 100%;
+  background: color-mix(in srgb, var(--nero) 55%, transparent);
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--oro) 45%, transparent);
+  color: var(--crema);
+  font-family: "Courier Prime", monospace;
+  font-size: var(--step-0);
+  padding: 0.6rem 0.7rem;
+}
+.course.is-printed .field input[type="text"] {
+  background: #E4D9BE;
+  border-bottom-color: var(--sangue);
+  color: var(--inchiostro);
+}
+.field input::placeholder { color: var(--fumo); opacity: 0.75; }
+
+.picks { display: grid; gap: 0.15rem; }
+
+.pick {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.2rem;
+  cursor: pointer;
+  font-size: var(--step--1);
+  border-bottom: 1px solid transparent;
+}
+.pick input { position: absolute; opacity: 0; pointer-events: none; }
+.pick-box {
+  flex-shrink: 0;
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 1px solid var(--oro);
+  transform: rotate(45deg);
+  transition: background 0.2s var(--ease);
+}
+.course.is-printed .pick-box { border-color: var(--sangue); }
+.pick input:checked + .pick-box { background: var(--oro); }
+.course.is-printed .pick input:checked + .pick-box { background: var(--sangue); }
+.pick input:focus-visible + .pick-box { outline: 2px solid var(--oro-chiaro); outline-offset: 3px; }
+.pick:hover { border-bottom-color: color-mix(in srgb, var(--oro) 35%, transparent); }
+
+.modes { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.mode {
+  cursor: pointer;
+  font-size: var(--step--2);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.55em 0.85em;
+  border: 1px solid color-mix(in srgb, var(--oro) 40%, transparent);
+  color: var(--fumo);
+  transition: all 0.2s var(--ease);
+}
+.mode input { position: absolute; opacity: 0; pointer-events: none; }
+.mode:has(input:checked) { border-color: var(--oro); color: var(--oro-chiaro); }
+.mode:has(input:focus-visible) { outline: 2px solid var(--oro-chiaro); outline-offset: 3px; }
+.course.is-printed .mode { border-color: #C1B18A; color: #7A6E5C; }
+.course.is-printed .mode:has(input:checked) { border-color: var(--sangue); color: var(--sangue); background: color-mix(in srgb, var(--sangue) 8%, transparent); }
+
+.form-actions { display: flex; gap: 0.7rem; align-items: center; }
+
+.commit {
+  flex: 1;
+  background: var(--oro);
+  border: 1px solid var(--oro);
+  color: var(--nero);
+  font-family: "Archivo", sans-serif;
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  padding: 0.95rem 1rem;
+  cursor: pointer;
+  transition: opacity 0.2s var(--ease);
+}
+.commit:hover { opacity: 0.86; }
+.commit[disabled] { opacity: 0.5; cursor: progress; }
+.course.is-printed .commit { background: var(--sangue); border-color: var(--sangue); color: var(--crema); }
+
+.never-mind {
+  background: none;
+  border: 0;
+  color: var(--fumo);
+  font-family: "Archivo", sans-serif;
+  font-size: var(--step--2);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.9rem 0.4rem;
+  cursor: pointer;
+}
+.never-mind:hover { color: var(--crema); }
+.course.is-printed .never-mind:hover { color: var(--inchiostro); }
+
+.form-error {
+  margin: 0;
+  font-family: "Courier Prime", monospace;
+  font-size: var(--step--1);
+  color: var(--sangue-vivo);
+}
+.course.is-printed .form-error { color: var(--sangue); }
+
+[hidden] { display: none !important; }
+
+/* ---------------------------------------------------------- closing */
+
+.handled {
+  margin-top: 3rem;
+  border: 1px solid color-mix(in srgb, var(--oro) 22%, transparent);
+  padding: 1.6rem 1.4rem;
+  text-align: center;
+}
+.handled-title {
+  margin: 0 0 0.7rem;
+  font-family: "Archivo", sans-serif;
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--oro);
+}
+.handled-body {
+  margin: 0 auto;
+  max-width: 42ch;
+  font-size: var(--step--1);
+  color: var(--fumo);
+}
+.handled-sig {
+  margin: 0.9rem 0 0;
+  font-family: "Bodoni Moda", serif;
+  font-style: italic;
+  color: var(--crema-scura);
+}
+
+.colophon {
+  margin-top: 3.5rem;
+  text-align: center;
+  color: var(--fumo);
+  font-size: var(--step--1);
+}
+.colophon p { margin: 0 auto; max-width: 44ch; }
+.colophon-mark { margin-top: 1.6rem; color: var(--oro); font-size: var(--step-1); }
+
+/* ---------------------------------------------------------- toast */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.4rem;
+  transform: translate(-50%, 140%);
+  background: var(--crema);
+  color: var(--inchiostro);
+  font-family: "Courier Prime", monospace;
+  font-size: var(--step--1);
+  padding: 0.75rem 1.3rem;
+  border: 1px solid var(--sangue);
+  z-index: 60;
+  transition: transform 0.4s var(--ease);
+  max-width: calc(100% - 2rem);
+  text-align: center;
+}
+.toast.is-up { transform: translate(-50%, 0); }
+
+/* ---------------------------------------------------------- entrance */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+.course { animation: rise 0.6s var(--ease) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------- wider */
+
+@media (min-width: 46rem) {
+  .course { padding: 2rem 2rem 1.75rem; }
+  .seal { right: 1.2rem; bottom: 1.2rem; }
+  .courses { gap: 1.35rem; }
+}

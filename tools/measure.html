@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+  body { margin:0; background:#fff; color:#000; font:13px/1.45 ui-monospace,monospace; }
+  iframe { width:430px; height:900px; border:0; }
+  pre { padding:10px; margin:0; white-space:pre-wrap; font-size:15px; }
+</style></head>
+<body>
+<iframe id="f" src="../docs/index.html?demo"></iframe>
+<pre id="out">measuring…</pre>
+<script>
+const f = document.getElementById('f');
+f.addEventListener('load', () => setTimeout(() => {
+  const d = f.contentDocument, w = f.contentWindow;
+  const vw = w.innerWidth;
+  const lines = [];
+  lines.push('viewport = ' + vw);
+  lines.push('doc.scrollWidth = ' + d.documentElement.scrollWidth);
+  lines.push('body.scrollWidth = ' + d.body.scrollWidth);
+  lines.push('--- elements wider than viewport / sticking out right ---');
+  d.querySelectorAll('*').forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.right > vw + 1 || r.width > vw + 1) {
+      lines.push(
+        (el.tagName + '.' + (el.className || '')).slice(0, 42).padEnd(44) +
+        ' w=' + Math.round(r.width) + ' right=' + Math.round(r.right)
+      );
+    }
+  });
+  document.getElementById('out').textContent = lines.slice(0, 40).join('\n');
+}, 1200));
+</script>
+</body></html>
