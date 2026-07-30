@@ -435,8 +435,19 @@ const DEMO = {
   },
 };
 
+/* Without the book, claims never leave this browser. Say so loudly:
+   a sign-up sheet that silently forgets is worse than none. */
+function warnIfNotShared() {
+  if (API) return;
+  const el = document.createElement("p");
+  el.className = "not-shared";
+  el.textContent = "Not connected to the book yet. Anything you write here stays on this phone and nobody else can see it.";
+  document.querySelector("main").prepend(el);
+}
+
 async function boot() {
   paintParticulars();
+  warnIfNotShared();
   if (location.search.includes("demo")) {
     state = DEMO; render(); return;
   }

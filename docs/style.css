@@ -171,6 +171,17 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
   font-size: var(--step-0);
 }
 
+.not-shared {
+  margin: 0 0 2rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--sangue-vivo);
+  background: color-mix(in srgb, var(--sangue) 18%, transparent);
+  color: var(--crema);
+  font-family: "Courier Prime", monospace;
+  font-size: var(--step--1);
+  text-align: center;
+}
+
 .courses { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; }
 
 /* ---------------------------------------------------------- the card */
