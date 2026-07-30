@@ -83,6 +83,8 @@ const TOTAL_SEATS = COURSES.reduce((n, c) => n + c.seats, 0);
 let state = { claims: {} };   // { [courseId]: [ {id, name, dish, note, mode} ] }
 let openForm = null;          // courseId whose form is expanded
 let sealed = new Set();       // courses already stamped, so we only animate new ones
+let lit = new Set();          // courses already on paper, same reason
+let lastTaken = null;         // so the tally only reacts when it actually moves
 let firstPaint = true;
 
 /* ---------------------------------------------------------- transport */
@@ -291,18 +293,27 @@ function claimForm(course) {
 
 function render() {
   const taken = seatsTaken();
+  const counter = document.querySelector(".tally-count");
   document.getElementById("tally-num").textContent = taken;
   document.getElementById("tally-total").textContent = TOTAL_SEATS;
+  if (lastTaken !== null && taken > lastTaken && counter) {
+    counter.classList.remove("is-ticking");
+    void counter.offsetWidth;                  // restart the animation
+    counter.classList.add("is-ticking");
+  }
+  lastTaken = taken;
 
   $courses.innerHTML = COURSES.map((course, i) => {
     const st = statusFor(course);
     const printed = (state.claims[course.id] || []).length > 0;
     const isFull = st.state === "full";
     const fresh = isFull && !sealed.has(course.id) && !firstPaint;
+    const newlyLit = printed && !lit.has(course.id) && !firstPaint;
     if (isFull) sealed.add(course.id); else sealed.delete(course.id);
+    if (printed) lit.add(course.id); else lit.delete(course.id);
 
     return `
-      <li class="course${printed ? " is-printed" : ""}" style="animation-delay:${firstPaint ? i * 55 : 0}ms">
+      <li class="course${printed ? " is-printed" : ""}${newlyLit ? " is-lit" : ""}" style="animation-delay:${firstPaint ? i * 55 : 0}ms">
         ${isFull ? seal(course).replace("class=\"seal\"", `class="seal${fresh ? " is-fresh" : ""}"`) : ""}
         <div class="course-head">
           <p class="credit">
@@ -476,10 +487,35 @@ function warnIfNotShared() {
   document.querySelector("main").prepend(el);
 }
 
+/* The match burns once per visitor, and only if they let it. */
+function strikeMatch() {
+  const intro = document.getElementById("intro");
+  if (!intro) return;
+  if (document.documentElement.classList.contains("no-intro")) { intro.remove(); return; }
+
+  document.body.classList.add("intro-running");
+  let done = false;
+  const snuff = () => {
+    if (done) return;
+    done = true;
+    intro.classList.add("is-done");
+    document.body.classList.remove("intro-running");
+    setTimeout(() => intro.remove(), 900);
+    try { localStorage.setItem("the-oath-intro", "1"); } catch (e) { /* private mode */ }
+  };
+
+  setTimeout(snuff, 3600);
+  intro.addEventListener("click", snuff);
+  addEventListener("keydown", snuff, { once: true });
+}
+
 async function boot() {
+  strikeMatch();
   paintParticulars();
   warnIfNotShared();
-  if (location.search.includes("demo")) {
+  const params = new URLSearchParams(location.search);
+  if (params.has("form")) openForm = params.get("form");   // for eyeballing a form
+  if (params.has("demo")) {
     state = DEMO; render(); return;
   }
   try { state = await fetchState(); } catch { state = { claims: {} }; }

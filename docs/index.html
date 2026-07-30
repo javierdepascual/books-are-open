@@ -18,8 +18,52 @@
 
 <!-- The book. Filled in once the Worker is deployed. -->
 <script>window.POTLUCK_API = "";</script>
+
+<!-- Decide before first paint, so a returning visitor never sees a black flash. -->
+<script>
+  try {
+    if (!location.search.includes("intro") &&
+        (localStorage.getItem("the-oath-intro") ||
+         matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+      document.documentElement.className = "no-intro";
+    }
+  } catch (e) { document.documentElement.className = "no-intro"; }
+</script>
 </head>
 <body>
+
+<!-- The oath is sworn over a burning card. So: a match, once. -->
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro-glow"></div>
+
+  <svg class="match" viewBox="0 0 120 300" aria-hidden="true">
+    <defs>
+      <radialGradient id="flame-core" cx="50%" cy="62%" r="55%">
+        <stop offset="0%"   stop-color="#FFF6D8"/>
+        <stop offset="45%"  stop-color="#FFD166"/>
+        <stop offset="100%" stop-color="#F08A24" stop-opacity="0.15"/>
+      </radialGradient>
+      <radialGradient id="flame-halo" cx="50%" cy="60%" r="50%">
+        <stop offset="0%"   stop-color="#FF9E2C" stop-opacity="0.85"/>
+        <stop offset="100%" stop-color="#B03A0C" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+
+    <g class="match-body">
+      <rect class="match-stick" x="56" y="96" width="7" height="180" rx="3"/>
+      <ellipse class="match-head" cx="59.5" cy="94" rx="10" ry="15"/>
+      <g class="flame">
+        <path class="flame-halo" d="M59.5 20 C 82 52, 84 76, 59.5 94 C 35 76, 37 52, 59.5 20 Z"/>
+        <path class="flame-core" d="M59.5 44 C 72 62, 73 79, 59.5 92 C 46 79, 47 62, 59.5 44 Z"/>
+      </g>
+    </g>
+  </svg>
+
+  <p class="intro-word">
+    <i>the</i>
+    <span>Oath</span>
+  </p>
+</div>
 
 <div class="grain" aria-hidden="true"></div>
 
@@ -53,6 +97,35 @@
 
   <ol class="courses" id="courses"></ol>
 
+  <section class="attire" aria-labelledby="attire-title">
+    <p class="attire-eyebrow">Not optional</p>
+    <h2 class="attire-title" id="attire-title">Dress the part</h2>
+
+    <p class="attire-body">
+      Dark suits, sharp collars, a tie you can loosen by eleven. Black dresses,
+      red lips, gold that catches the candlelight. Nothing costume-shop about it:
+      the look is a family that owns one very good outfit each and wears it to
+      dinner. If you own a hat, this is the night for it.
+    </p>
+
+    <figure class="sheet">
+      <img src="img/01-knot.jpg" alt="A man in a dark suit, lit hard against black" loading="lazy" width="800" height="1200">
+      <img src="img/02-pearls.jpg" alt="A woman in vintage styling wearing pearls" loading="lazy" width="800" height="1200">
+      <img src="img/03-hat.jpg" alt="A black fedora resting on a patterned cloth" loading="lazy" width="800" height="1200">
+      <img src="img/04-black.jpg" alt="A woman in a black dress and period accessories" loading="lazy" width="800" height="1200">
+      <img src="img/05-whitesuit.jpg" alt="A figure in a pale suit holding a fedora in low light" loading="lazy" width="800" height="1200">
+      <img src="img/06-smoke.jpg" alt="Smoke rising from candles beside a glass of red wine" loading="lazy" width="800" height="1200">
+      <figcaption>
+        Suits &middot; collars &middot; hats &middot; black &middot; gold &middot; smoke
+      </figcaption>
+    </figure>
+
+    <p class="attire-more">
+      Jacky keeps the full board:
+      <a href="https://es.pinterest.com/jackymontalvo27/italian-mafia-attire-mandatory/?invite_code=9e95d8f3b4654500844a18c6c699ba3f&amp;sender=1112459682863329764" rel="noopener">Italian Mafia Attire (mandatory)</a>
+    </p>
+  </section>
+
   <section class="handled" aria-label="Already handled">
     <h2 class="handled-title">Already handled</h2>
     <p class="handled-body">
@@ -65,6 +138,8 @@
   <footer class="colophon">
     <p>No time to cook is not a problem. Bring something good from a store, or put money toward a dish. Say so when you put your name down.</p>
     <p class="colophon-mark">&#10022;</p>
+    <p class="credits">Dress code photographs from Pexels &middot; Ramón Antonio Mendoza, Kari Alfonso,
+    Selvin Esteban, Evoking Ephemerality, David Margoux, lil artsy</p>
   </footer>
 </main>
 
