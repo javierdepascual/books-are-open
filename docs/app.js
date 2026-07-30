@@ -1,5 +1,5 @@
 /* ============================================================
-   A Seat at the Table
+   The Oath
    Static front end. State lives in a Cloudflare Durable Object.
    With no API configured it falls back to this browser only,
    which is enough to look at the thing but not to share it.
@@ -7,10 +7,13 @@
 
 const API = window.POTLUCK_API || "";
 
+/* Marks the write-in radio. Never stored: it is swapped for the typed dish. */
+const OTHER = "__other__";
+
 const PARTY = {
   host:    "Hosted by Jacky",
   name:    "An Italian potluck. Eight courses, one table.",
-  when:    "TBC",
+  when:    "Monday, August 17",
   time:    "7:30 pm",
   where:   "Sandro's place, Gardena",
   signoff: "— Jacky",
@@ -117,7 +120,7 @@ async function postRelease(payload) {
 
 /* Browser-only fallback so the page is never dead. */
 const local = {
-  key: "the-books-are-open",
+  key: "the-oath",
   read() {
     try { return JSON.parse(localStorage.getItem(this.key)) || { claims: {} }; }
     catch { return { claims: {} }; }
@@ -149,7 +152,7 @@ function statusFor(course) {
   const taken = (state.claims[course.id] || []).length;
   if (taken === 0) return { state: "open", label: course.seats > 1 ? "Two seats" : "Open" };
   if (taken < course.seats) return { state: "partial", label: "One seat left" };
-  return { state: "full", label: "Spoken for" };
+  return { state: "full", label: "Made" };
 }
 
 function esc(s) {
@@ -167,10 +170,10 @@ function seal(course) {
     <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" stroke-width="0.9"/>
     <circle cx="60" cy="60" r="33" fill="none" stroke="currentColor" stroke-width="0.9"/>
     <text class="seal-ring">
-      <textPath href="#${ringId}" startOffset="25%" text-anchor="middle">SPOKEN FOR</textPath>
+      <textPath href="#${ringId}" startOffset="25%" text-anchor="middle">SWORN IN</textPath>
     </text>
     <text class="seal-ring">
-      <textPath href="#${ringId}" startOffset="75%" text-anchor="middle">ON THE BOOKS</textPath>
+      <textPath href="#${ringId}" startOffset="75%" text-anchor="middle">THE OATH</textPath>
     </text>
     <text class="seal-numeral" x="60" y="71" text-anchor="middle">${course.numeral}</text>
   </svg>`;
@@ -203,12 +206,12 @@ function seatRows(course) {
         ${c.dish ? `<p class="seat-dish">${esc(c.dish)}</p>` : ""}
         ${c.note ? `<p class="seat-note">${esc(c.note)}</p>` : ""}
         ${mode && mode.id !== "cooking" ? `<span class="seat-mode">${esc(mode.label)}</span>` : ""}
-        <button class="seat-strike" data-strike="${esc(course.id)}" data-claim="${esc(c.id)}">strike it off</button>
+        <button class="seat-strike" data-strike="${esc(course.id)}" data-claim="${esc(c.id)}">break the oath</button>
       </div>`);
   });
 
   for (let i = claims.length; i < course.seats; i++) {
-    rows.push(`<div class="seat"><p class="seat-empty">Seat open</p></div>`);
+    rows.push(`<div class="seat"><p class="seat-empty">Seat still open</p></div>`);
   }
 
   // Nothing claimed yet: no ledger, keep the card quiet.
@@ -232,13 +235,22 @@ function claimForm(course) {
             <span class="pick-box"></span>
             <span>${esc(o)}</span>
           </label>`).join("")}
+        <label class="pick">
+          <input type="radio" name="dish-${course.id}" value="${OTHER}">
+          <span class="pick-box"></span>
+          <span>Something else</span>
+        </label>
+      </div>
+      <div class="other" data-other hidden>
+        <input type="text" name="other" maxlength="60" placeholder="What are you bringing?">
+        <p class="hint">Keep it Italian.</p>
       </div>
     </div>` : "";
 
   return `
     <div class="course-action">
       <button class="put-name" data-open="${esc(course.id)}"${isOpen ? " hidden" : ""}>
-        Put your name down
+        Take the oath
       </button>
 
       <form class="claim-form" data-form="${esc(course.id)}"${isOpen ? "" : " hidden"}>
@@ -270,7 +282,7 @@ function claimForm(course) {
         <p class="form-error" data-error hidden></p>
 
         <div class="form-actions">
-          <button type="submit" class="commit">Write it down</button>
+          <button type="submit" class="commit">Swear to it</button>
           <button type="button" class="never-mind" data-close>Never mind</button>
         </div>
       </form>
@@ -350,7 +362,7 @@ $courses.addEventListener("click", async (e) => {
     const claimId = strike.dataset.claim;
     const claim = (state.claims[courseId] || []).find((c) => c.id === claimId);
     if (!claim) return;
-    const typed = prompt(`Type the name exactly as written to strike it off:\n\n${claim.name}`);
+    const typed = prompt(`Type the name exactly as written to break the oath:\n\n${claim.name}`);
     if (typed === null) return;
     if (typed.trim().toLowerCase() !== claim.name.trim().toLowerCase()) {
       toast("That name doesn't match. Nothing was changed.");
@@ -359,9 +371,18 @@ $courses.addEventListener("click", async (e) => {
     try {
       state = await postRelease({ courseId, claimId });
       render();
-      toast("Struck off. The seat is open again.");
+      toast("The oath is broken. That seat is open again.");
     } catch { toast("Couldn't reach the book. Try again."); }
   }
+});
+
+$courses.addEventListener("change", (e) => {
+  const radio = e.target.closest('input[type="radio"][name^="dish-"]');
+  if (!radio) return;
+  const box = radio.closest(".field").querySelector("[data-other]");
+  if (!box) return;
+  box.hidden = radio.value !== OTHER;
+  if (!box.hidden) box.querySelector("input").focus();
 });
 
 $courses.addEventListener("submit", async (e) => {
@@ -384,28 +405,38 @@ $courses.addEventListener("submit", async (e) => {
   const dishInput = form.querySelector(`input[name="dish-${courseId}"]:checked`);
   const modeInput = form.querySelector(`input[name="mode-${courseId}"]:checked`);
 
+  let dish = dishInput ? dishInput.value : "";
+  if (dish === OTHER) {
+    dish = form.elements.other.value.trim();
+    if (!dish) {
+      err.textContent = "Say what you're bringing, then we'll write it down.";
+      err.hidden = false;
+      return;
+    }
+  }
+
   const payload = {
     courseId,
     name,
-    dish: dishInput ? dishInput.value : "",
+    dish,
     note: form.elements.note.value.trim(),
     mode: modeInput ? modeInput.value : "cooking",
   };
 
   err.hidden = true;
   button.disabled = true;
-  button.textContent = "Writing it down…";
+  button.textContent = "Swearing you in…";
 
   try {
     state = await postClaim(payload);
     openForm = null;
     render();
-    toast(`${name} — ${course.name}. It's on the books.`);
+    toast(`${name} — ${course.name}. A friend of ours.`);
   } catch (ex) {
     button.disabled = false;
-    button.textContent = "Write it down";
+    button.textContent = "Swear to it";
     err.textContent = ex.message === "taken"
-      ? "Somebody just took that one. Pick another course."
+      ? "Somebody swore to that one first. Pick another course."
       : "Couldn't reach the book. Try again in a second.";
     err.hidden = false;
     if (ex.message === "taken") { await refresh(); }

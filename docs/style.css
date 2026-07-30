@@ -102,12 +102,13 @@ body {
 }
 .wordmark-b {
   font-style: italic;
-  font-size: 0.46em;
+  font-size: 0.34em;
   color: var(--oro-chiaro);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  margin-bottom: -0.12em;
 }
 .wordmark-b i { font-style: italic; }
-.wordmark-c { font-weight: 700; }
+.wordmark-c { font-weight: 700; font-size: 1.18em; }
 
 .dek {
   margin: 1.5rem auto 0;
@@ -496,6 +497,31 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 .course.is-printed .pick input:checked + .pick-box { background: var(--sangue); }
 .pick input:focus-visible + .pick-box { outline: 2px solid var(--oro-chiaro); outline-offset: 3px; }
 .pick:hover { border-bottom-color: color-mix(in srgb, var(--oro) 35%, transparent); }
+
+.other { margin-top: 0.7rem; padding-left: 1.55rem; }
+.other input[type="text"] {
+  width: 100%;
+  background: color-mix(in srgb, var(--nero) 55%, transparent);
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--oro) 45%, transparent);
+  color: var(--crema);
+  font-family: "Courier Prime", monospace;
+  font-size: var(--step-0);
+  padding: 0.6rem 0.7rem;
+}
+.course.is-printed .other input[type="text"] {
+  background: #E4D9BE;
+  border-bottom-color: var(--sangue);
+  color: var(--inchiostro);
+}
+.hint {
+  margin: 0.45rem 0 0;
+  font-size: var(--step--2);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--oro);
+}
+.course.is-printed .hint { color: var(--sangue); }
 
 .modes { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .mode {
