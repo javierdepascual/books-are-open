@@ -439,6 +439,10 @@ function render() {
          gold :focus-visible ring stuck around the name field, and on a phone
          it throws the keyboard up before anyone asked for it. */
       form.scrollIntoView({ block: "center", behavior: "smooth" });
+      form.querySelectorAll("input:checked").forEach((i) => {
+        const label = i.closest("label");
+        if (label) label.classList.add("is-picked");
+      });
     }
   }
   firstPaint = false;
@@ -497,7 +501,23 @@ $courses.addEventListener("click", async (e) => {
   }
 });
 
+/* Chrome does not invalidate `input:checked + span` when a radio in the
+   same group is implicitly unchecked, so the highlight sticks on whatever
+   was selected first. Verified in a real browser: the selector matches, the
+   computed style does not follow until something forces a restyle. So the
+   selected state is mirrored onto a class we set ourselves. */
+function syncPicked(input) {
+  const scope = input.form || document;
+  scope.querySelectorAll(`input[name="${CSS.escape(input.name)}"]`).forEach((sib) => {
+    const label = sib.closest("label");
+    if (label) label.classList.toggle("is-picked", sib.checked);
+  });
+}
+
 $courses.addEventListener("change", (e) => {
+  const picked = e.target.closest('input[type="radio"], input[type="checkbox"]');
+  if (picked) syncPicked(picked);
+
   const dish = e.target.closest('input[type="radio"][name^="dish-"]');
   if (dish) {
     const box = dish.closest(".field").querySelector("[data-other]");
