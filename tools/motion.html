@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- Fires a real claim in the page and freezes frames while the seal lands.
+     Static screenshots of an animation lie unless you drive the real event. -->
+<html><head><meta charset="utf-8">
+<style>
+  body { margin:0; background:#fff; font:13px ui-monospace,monospace; }
+  iframe { width:430px; height:1400px; border:0; }
+  #log { padding:8px; font-size:15px; }
+</style></head>
+<body>
+<iframe id="f" src="../docs/index.html?demo"></iframe>
+<pre id="log">arming…</pre>
+<script>
+const f = document.getElementById('f');
+const log = (m) => { document.getElementById('log').textContent = m; };
+
+f.addEventListener('load', () => setTimeout(() => {
+  const d = f.contentDocument;
+  // L'Insalata is a one-seat course and starts empty: claiming it seals it.
+  const open = d.querySelector('[data-open="insalata"]');
+  if (!open) { log('no claim button found'); return; }
+  open.click();
+
+  setTimeout(() => {
+    const form = d.querySelector('[data-form="insalata"]');
+    form.elements.name.value = 'Vito & Carmela';
+    form.requestSubmit();
+
+    setTimeout(() => {
+      const card = [...d.querySelectorAll('.course')]
+        .find(c => c.textContent.includes("L'Insalata"));
+      const seal = card && card.querySelector('.seal');
+      log([
+        'card classes : ' + (card ? card.className : 'none'),
+        'seal present : ' + !!seal,
+        'seal fresh   : ' + (seal ? seal.classList.contains('is-fresh') : 'n/a'),
+        'status       : ' + (card ? card.querySelector('.status').textContent.trim() : ''),
+        'tally        : ' + d.querySelector('.tally-count').textContent.trim(),
+      ].join('\n'));
+    }, 120);
+  }, 300);
+}, 1400));
+</script>
+</body></html>

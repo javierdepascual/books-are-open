@@ -15,7 +15,7 @@ const PARTY = {
   name:    "An Italian potluck. Eight courses, one table.",
   when:    "Monday, August 17",
   time:    "7:30 pm",
-  where:   "Sandro's place, Gardena",
+  where:   "Sandra's place, Gardena",
   signoff: "— Jacky",
 };
 
@@ -313,7 +313,7 @@ function render() {
     if (printed) lit.add(course.id); else lit.delete(course.id);
 
     return `
-      <li class="course${printed ? " is-printed" : ""}${newlyLit ? " is-lit" : ""}" style="animation-delay:${firstPaint ? i * 55 : 0}ms">
+      <li class="course${printed ? " is-printed" : ""}${fresh ? " is-stamped" : newlyLit ? " is-lit" : ""}"${firstPaint ? ` style="animation-delay:${i * 55}ms"` : ""}>
         ${isFull ? seal(course).replace("class=\"seal\"", `class="seal${fresh ? " is-fresh" : ""}"`) : ""}
         <div class="course-head">
           <p class="credit">
@@ -472,7 +472,7 @@ const DEMO = {
   claims: {
     antipasto: [{ id: "d1", name: "Marco & Elena", dish: "The whole board", note: "Bringing a wooden board too", mode: "buying" }],
     primo: [{ id: "d2", name: "Javi & Jacky", dish: "Lasagna", note: "", mode: "cooking" }],
-    dolce: [{ id: "d3", name: "Sandro", dish: "Tiramisu", note: "Made the night before", mode: "cooking" }],
+    dolce: [{ id: "d3", name: "Sandra", dish: "Tiramisu", note: "Made the night before", mode: "cooking" }],
     secondo: [{ id: "d4", name: "Nick", dish: "Chicken Parmesan", note: "", mode: "cooking" }],
   },
 };
