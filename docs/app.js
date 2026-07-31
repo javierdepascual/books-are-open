@@ -435,11 +435,10 @@ function render() {
   if (openForm) {
     const form = $courses.querySelector(`[data-form="${openForm}"]`);
     if (form) {
-      // Bring the form into view ourselves, then focus without letting the
-      // browser scroll again. Left alone, focus on a phone jumps the page and
-      // leaves half the form under the keyboard.
+      /* Scroll it into view but do NOT focus. A programmatic focus leaves the
+         gold :focus-visible ring stuck around the name field, and on a phone
+         it throws the keyboard up before anyone asked for it. */
       form.scrollIntoView({ block: "center", behavior: "smooth" });
-      form.querySelector('input[name="name"]').focus({ preventScroll: true });
     }
   }
   firstPaint = false;
