@@ -6,6 +6,9 @@
    ============================================================ */
 
 const API = window.POTLUCK_API || "";
+/* ?book=<name> points every call at a scratch book, for rehearsals. */
+const BOOK = new URLSearchParams(location.search).get("book") || "";
+const api = (path) => `${API}${path}` + (BOOK ? `?book=${encodeURIComponent(BOOK)}` : "");
 
 /* Marks the write-in radio. Never stored: it is swapped for the typed dish. */
 const OTHER = "__other__";
@@ -19,69 +22,6 @@ const PARTY = {
   signoff: "",
 };
 
-/* Menu order, because a menu is a real sequence.
-   seats: how many parties share the course. A couple counts as one party. */
-const COURSES = [
-  {
-    id: "antipasto", numeral: "I", name: "Antipasto", gloss: "The board", seats: 1,
-    pick: "list",
-    options: [
-      "Salami, prosciutto, cheeses, mozzarella",
-      "Olives, roasted peppers, artichokes",
-      "Crackers and bread",
-    ],
-    listLabel: "The whole board",
-  },
-  {
-    id: "pane", numeral: "II", name: "Il Pane", gloss: "Bread and starters", seats: 1,
-    pick: "one",
-    options: ["Focaccia", "Bruschetta", "Garlic bread", "Breadsticks"],
-  },
-  {
-    id: "primo", numeral: "III", name: "Il Primo", gloss: "Main dish, the pasta", seats: 2,
-    pick: "one",
-    options: ["Lasagna", "Baked ziti", "Another big pasta dish"],
-  },
-  {
-    id: "secondo", numeral: "IV", name: "Il Secondo", gloss: "Main dish, the meat", seats: 2,
-    pick: "one",
-    options: ["Meatballs with marinara", "Chicken Parmesan", "Eggplant Parmesan", "Italian sausage and peppers"],
-  },
-  {
-    id: "insalata", numeral: "V", name: "L'Insalata", gloss: "Salad or side", seats: 1,
-    pick: "one",
-    options: ["Italian chopped salad", "Caprese salad", "Roasted vegetables"],
-  },
-  {
-    id: "dolce", numeral: "VI", name: "Il Dolce", gloss: "Dessert", seats: 1,
-    pick: "one",
-    options: ["Tiramisu", "Cannoli", "Italian cookies", "Gelato, or another Italian dessert"],
-  },
-  {
-    id: "vino", numeral: "VII", name: "Il Vino", gloss: "The wine", seats: 1,
-    pick: "list",
-    options: ["Three bottles of red", "One bottle of white, rosé or Prosecco"],
-    listLabel: "Four bottles, roughly",
-  },
-  {
-    id: "bibite", numeral: "VIII", name: "Le Bibite", gloss: "Soft drinks and extras", seats: 1,
-    pick: "list",
-    options: ["Sparkling water", "Italian sodas, regular sodas", "Ice", "Lemons and oranges"],
-    listLabel: "The whole run",
-  },
-];
-
-const MODES = [
-  { id: "cooking", label: "I'm cooking it" },
-  { id: "buying",  label: "I'm buying it" },
-  { id: "money",   label: "Jacky makes it, I chip in" },
-];
-
-const BY_ID = Object.fromEntries(COURSES.map((c) => [c.id, c]));
-
-/* A list course is covered line by line, so its size is its number of
-   lines. A cooked course is covered by parties. Both are "things to bring". */
-const sizeOf = (c) => (c.pick === "list" ? c.options.length : c.seats);
 const TOTAL_SEATS = COURSES.reduce((n, c) => n + sizeOf(c), 0);
 
 // Who has already spoken for each line of a list course.
@@ -110,14 +50,14 @@ let firstPaint = true;
 
 async function fetchState() {
   if (!API) return local.read();
-  const res = await fetch(`${API}/state`, { cache: "no-store" });
+  const res = await fetch(api("/state"), { cache: "no-store" });
   if (!res.ok) throw new Error("state");
   return res.json();
 }
 
 async function postClaim(payload) {
   if (!API) return local.claim(payload);
-  const res = await fetch(`${API}/claim`, {
+  const res = await fetch(api("/claim"), {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(payload),
@@ -129,7 +69,7 @@ async function postClaim(payload) {
 
 async function postRelease(payload) {
   if (!API) return local.release(payload);
-  const res = await fetch(`${API}/release`, {
+  const res = await fetch(api("/release"), {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(payload),

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Oath · Kitchen</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B0A09">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Archivo:wght@400;500;600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="kitchen.css?v=3">
+
+<script>window.POTLUCK_API = "https://the-oath.javierdepascual.workers.dev";</script>
+</head>
+<body class="kitchen">
+
+<div class="velvet" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="k-head">
+  <p class="eyebrow">For Jacky</p>
+  <h1 class="k-title">The Kitchen</h1>
+  <p class="k-sub">Who is bringing what, what is still missing, and what the money adds up to.</p>
+  <p class="k-when" id="k-when">reading the book…</p>
+</header>
+
+<main class="k-main">
+  <section class="k-tiles" id="k-tiles" aria-label="Summary"></section>
+
+  <section class="k-block">
+    <h2 class="k-h">Still missing</h2>
+    <div id="k-missing"></div>
+  </section>
+
+  <section class="k-block">
+    <h2 class="k-h">Money in</h2>
+    <div id="k-money"></div>
+  </section>
+
+  <section class="k-block">
+    <h2 class="k-h">On you</h2>
+    <p class="k-note">Everything below was paid for rather than cooked, so it is yours to buy and make.</p>
+    <div id="k-jacky"></div>
+  </section>
+
+  <section class="k-block">
+    <h2 class="k-h">Everyone</h2>
+    <div id="k-people"></div>
+  </section>
+
+  <section class="k-block">
+    <h2 class="k-h">Course by course</h2>
+    <div id="k-courses"></div>
+  </section>
+
+  <footer class="k-foot">
+    <p>This page only reads the book. Nothing here can change what anyone claimed.</p>
+    <p><a href="./">← the invitation</a></p>
+  </footer>
+</main>
+
+<script src="courses.js?v=3"></script>
+<script src="kitchen.js?v=3"></script>
+</body>
+</html>

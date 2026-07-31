@@ -1,0 +1,179 @@
+/* ============================================================
+   The Kitchen — same world as the invitation, but this is a working
+   document, not an invitation. Denser, flatter, quicker to scan, and
+   no theatrics: whoever opens this is trying to find out what to buy.
+   ============================================================ */
+
+body.kitchen { padding-bottom: 4rem; }
+
+.k-head {
+  width: var(--shell);
+  margin-inline: auto;
+  padding-block: clamp(2.5rem, 7vw, 4rem) clamp(1.5rem, 4vw, 2.25rem);
+  text-align: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--oro) 30%, transparent);
+}
+.k-title {
+  margin: 0.5rem 0 0;
+  font-family: var(--display);
+  font-size: clamp(2.4rem, 9vw, 4rem);
+  line-height: 1;
+  color: var(--crema);
+}
+.k-sub {
+  margin: 0.9rem auto 0;
+  max-width: 44ch;
+  color: var(--fumo);
+  font-size: var(--step--1);
+}
+.k-when {
+  margin: 1rem 0 0;
+  font-family: "Courier Prime", monospace;
+  font-size: var(--step--2);
+  color: color-mix(in srgb, var(--fumo) 80%, transparent);
+}
+.k-when.k-stale { color: var(--sangue-vivo); }
+
+.k-main { width: var(--shell); margin-inline: auto; }
+
+/* ---------------------------------------------------------- tiles */
+
+.k-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 1px;
+  margin-top: clamp(1.5rem, 5vw, 2.5rem);
+  background: color-mix(in srgb, var(--oro) 25%, transparent);
+  border: 1px solid color-mix(in srgb, var(--oro) 25%, transparent);
+}
+.k-tile { background: var(--nero); padding: 1.1rem 0.9rem; text-align: center; }
+.k-tile-big {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  line-height: 1;
+  color: var(--oro-chiaro);
+}
+.k-tile-small {
+  margin: 0.5rem 0 0;
+  font-size: var(--step--2);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fumo);
+}
+
+/* ---------------------------------------------------------- blocks */
+
+.k-block { margin-top: clamp(2rem, 6vw, 3rem); }
+.k-h {
+  margin: 0 0 1rem;
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--oro);
+  border-bottom: 1px solid color-mix(in srgb, var(--oro) 22%, transparent);
+  padding-bottom: 0.6rem;
+}
+.k-note { margin: -0.4rem 0 1rem; font-size: var(--step--1); color: var(--fumo); }
+.k-empty { margin: 0; color: var(--fumo); font-style: italic; }
+.k-empty.k-good { color: var(--oro-chiaro); font-style: normal; }
+.k-dim { color: color-mix(in srgb, var(--fumo) 85%, transparent); }
+
+.k-row { padding: 0.85rem 0; border-bottom: 1px solid color-mix(in srgb, var(--oro) 14%, transparent); }
+.k-row:last-child { border-bottom: 0; }
+.k-row-name {
+  margin: 0;
+  font-family: var(--display);
+  font-size: var(--step-1);
+  color: var(--crema);
+}
+.k-row-gloss {
+  font-family: "Archivo", sans-serif;
+  font-size: var(--step--2);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fumo);
+  margin-left: 0.5rem;
+}
+.k-row-sub { margin: 0.3rem 0 0; font-size: var(--step--1); color: var(--fumo); }
+
+.k-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.15em 0.5em;
+  font-family: "Courier Prime", monospace;
+  font-size: var(--step--2);
+  color: var(--oro-chiaro);
+  border: 1px solid color-mix(in srgb, var(--oro) 45%, transparent);
+}
+
+.k-gaps { margin: 0.4rem 0 0; padding-left: 1.1rem; color: var(--sangue-vivo); font-size: var(--step--1); }
+.k-gaps li { margin: 0.15rem 0; }
+
+/* ---------------------------------------------------------- table */
+
+.k-table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+.k-table th {
+  text-align: left;
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fumo);
+  padding: 0 0 0.5rem;
+}
+.k-table td { padding: 0.5rem 0; border-top: 1px solid color-mix(in srgb, var(--oro) 14%, transparent); }
+.k-table .k-num { text-align: right; font-family: "Courier Prime", monospace; }
+.k-table tfoot td {
+  border-top: 1px solid color-mix(in srgb, var(--oro) 40%, transparent);
+  color: var(--oro-chiaro);
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------- people */
+
+.k-person { padding: 0.9rem 0; border-bottom: 1px solid color-mix(in srgb, var(--oro) 14%, transparent); }
+.k-person:last-child { border-bottom: 0; }
+.k-person-name {
+  margin: 0;
+  font-family: "Courier Prime", monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--crema);
+}
+.k-brings { margin: 0.4rem 0 0; padding-left: 1.1rem; font-size: var(--step--1); color: var(--crema-scura); }
+.k-brings li { margin: 0.15rem 0; }
+
+/* ---------------------------------------------------------- courses */
+
+#k-courses { display: grid; gap: 1px; background: color-mix(in srgb, var(--oro) 18%, transparent);
+             border: 1px solid color-mix(in srgb, var(--oro) 18%, transparent); }
+.k-course { background: var(--nero); padding: 0.9rem 1rem; }
+.k-course.is-full { background: color-mix(in srgb, var(--oro) 6%, var(--nero)); }
+.k-course-head { margin: 0 0 0.5rem; display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.k-course-name { font-family: var(--display); font-size: var(--step-1); color: var(--crema); }
+.k-course-count {
+  font-family: "Courier Prime", monospace;
+  font-size: var(--step--1);
+  color: var(--fumo);
+}
+.k-course.is-full .k-course-count { color: var(--oro-chiaro); }
+.k-lines { margin: 0; padding: 0; list-style: none; font-size: var(--step--1); }
+.k-lines li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.22rem 0;
+  color: var(--crema-scura);
+}
+.k-who { font-family: "Courier Prime", monospace; font-size: var(--step--2);
+         text-transform: uppercase; color: var(--oro-chiaro); white-space: nowrap; }
+.k-open { font-family: "Courier Prime", monospace; font-size: var(--step--2);
+          text-transform: uppercase; color: var(--fumo); white-space: nowrap; }
+
+/* ---------------------------------------------------------- foot */
+
+.k-foot { margin-top: 3rem; text-align: center; color: var(--fumo); font-size: var(--step--2); }
+.k-foot a { color: var(--oro-chiaro); text-decoration: underline; text-underline-offset: 4px; }

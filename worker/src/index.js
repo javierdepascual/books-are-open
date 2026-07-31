@@ -84,6 +84,15 @@ export class Book {
       });
     }
 
+    /* Only scratch books ever get here; the router refuses to forward
+       /wipe for the real one. */
+    if (url.pathname === "/wipe") {
+      await this.ctx.storage.deleteAll();
+      return new Response(JSON.stringify({ claims: {} }), {
+        headers: { "content-type": "application/json" },
+      });
+    }
+
     const body = await request.json().catch(() => ({}));
     const claims = await this.claims();
     const courseId = clean(body.courseId, 24);
@@ -114,6 +123,11 @@ export class Book {
         amount = Math.round(Number(body.amount));
         if (!Number.isFinite(amount) || amount < 1 || amount > 999) {
           return new Response(JSON.stringify({ error: "bad amount" }), { status: 400 });
+        }
+        // Paying for a cooked course still takes the seat, so it still has
+        // to queue for one. Only list courses let money in without a limit.
+        if (course.seats && list.length >= course.seats) {
+          return new Response(JSON.stringify({ error: "taken" }), { status: 409 });
         }
       } else if (course.items) {
         items = Array.isArray(body.items)
@@ -174,12 +188,22 @@ export default {
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
-    if (!["/state", "/claim", "/release"].includes(url.pathname)) {
+
+    /* Scratch books for the soak tests. ?book=foo works on "scratch:foo",
+       which can never collide with the real one, and only a scratch book
+       will answer /wipe. The party's book is not erasable over HTTP. */
+    const scratch = (url.searchParams.get("book") || "").replace(/[^a-z0-9-]/gi, "").slice(0, 24);
+    const bookName = scratch ? `scratch:${scratch}` : "the-book";
+
+    if (url.pathname === "/wipe" && !scratch) {
+      return json({ error: "the real book cannot be wiped" }, 403, origin);
+    }
+
+    if (!["/state", "/claim", "/release", "/wipe"].includes(url.pathname)) {
       return json({ error: "not found" }, 404, origin);
     }
 
-    // Everyone shares one book.
-    const id = env.BOOK.idFromName("the-book");
+    const id = env.BOOK.idFromName(bookName);
     const res = await env.BOOK.get(id).fetch(request);
     const body = await res.json();
     return json(body, res.status, origin);
