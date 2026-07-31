@@ -1,7 +1,8 @@
 /* ============================================================
    The Oath — an Italian potluck, kept in a ledger
    Palette   nero / carbone / oro / oro chiaro / sangue / crema
-   Display   Bodoni Moda   (Giambattista Bodoni, Parma, 1798)
+   Display   DM Serif Display  (weight the thin Bodoni lacked,
+                                and a real italic, which the page leans on)
    Record    Courier Prime (what gets typed into the book)
    Utility   Archivo       (labels, quiet)
    ============================================================ */
@@ -28,7 +29,7 @@
   --step-2:  clamp(1.6rem, 1.35rem + 1.2vw, 2.4rem);
   --step-3:  clamp(2.6rem, 1.9rem + 3.4vw, 5.2rem);
 
-  --display: "Bodoni Moda", Didot, serif;
+  --display: "DM Serif Display", Didot, serif;
 
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -205,7 +206,6 @@ body.intro-running { overflow: hidden; }
   letter-spacing: 0.04em;
 }
 .intro-word span {
-  font-weight: 700;
   font-size: clamp(3.2rem, 13vw, 6rem);
 }
 @keyframes word-dissolve {
@@ -285,7 +285,7 @@ body.intro-running { overflow: hidden; }
   margin-bottom: -0.12em;
 }
 .wordmark-b i { font-style: italic; }
-.wordmark-c { font-weight: 700; font-size: 1.18em; }
+.wordmark-c { font-size: 1.22em; }   /* one weight only: no faux bold */
 
 .dek {
   margin: 1.5rem auto 0;
@@ -596,8 +596,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 }
 .seal-numeral {
   font-family: var(--display);
-  font-size: 30px;
-  font-weight: 700;
+  font-size: 32px;
   letter-spacing: 0.04em;
   fill: currentColor;
 }
