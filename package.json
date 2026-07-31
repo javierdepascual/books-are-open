@@ -1,0 +1,20 @@
+{
+  "name": "the-oath",
+  "version": "1.0.0",
+  "description": "Potluck sign-up. Tools here are test harnesses; the site is in docs/.",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github-personal:javierdepascual/the-oath.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "playwright": "^1.62.1"
+  },
+  "private": true
+}

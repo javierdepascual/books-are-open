@@ -104,6 +104,16 @@ export class Book {
     const list = claims[courseId] || [];
 
     if (url.pathname === "/claim") {
+      /* One attempt carries one key. If the answer to it was lost and the
+         guest tries again, or a nervous finger fires the form twice, the
+         key is the same and the claim must not happen twice. */
+      const key = clean(body.key, 40);
+      if (key && list.some((c) => c.key === key)) {
+        return new Response(JSON.stringify({ claims }), {
+          headers: { "content-type": "application/json" },
+        });
+      }
+
       const name = clean(body.name, 60);
       if (!name) {
         return new Response(JSON.stringify({ error: "no name" }), { status: 400 });
@@ -152,6 +162,7 @@ export class Book {
 
       list.push({
         id: crypto.randomUUID().slice(0, 8),
+        key,
         name,
         dish: paying ? "" : clean(body.dish, 60),
         items,

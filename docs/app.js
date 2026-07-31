@@ -13,6 +13,12 @@ const api = (path) => `${API}${path}` + (BOOK ? `?book=${encodeURIComponent(BOOK
 /* Marks the write-in radio. Never stored: it is swapped for the typed dish. */
 const OTHER = "__other__";
 
+/* Random enough to be unique across the guest list; crypto.randomUUID is
+   only there over https, so fall back rather than throw. */
+const newKey = () => (crypto.randomUUID
+  ? crypto.randomUUID()
+  : "k" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
+
 const PARTY = {
   host:    "By invitation",
   name:    "An Italian potluck. Eight courses, one table.",
@@ -41,6 +47,8 @@ const takenCount = (course) =>
 
 let state = { claims: {} };   // { [courseId]: [ {id, name, dish, note, mode} ] }
 let openForm = null;          // courseId whose form is expanded
+let attemptKey = null;        // identifies one attempt, survives a retry
+let submitting = false;       // stops a second submit racing the first
 let sealed = new Set();       // courses already stamped, so we only animate new ones
 let lit = new Set();          // courses already on paper, same reason
 let lastTaken = null;         // so the tally only reacts when it actually moves
@@ -87,17 +95,18 @@ const local = {
     catch { return { claims: {} }; }
   },
   write(s) { localStorage.setItem(this.key, JSON.stringify(s)); return s; },
-  claim({ courseId, name, dish, items, note, mode }) {
+  claim({ courseId, name, dish, items, note, mode, key }) {
     const s = this.read();
     const course = BY_ID[courseId];
     const list = s.claims[courseId] || (s.claims[courseId] = []);
+    if (key && list.some((c) => c.key === key)) return s;
     if (course.pick === "list") {
       const spoken = new Set(list.flatMap((c) => c.items || []));
       if ((items || []).some((i) => spoken.has(i))) throw new Error("taken");
     } else if (list.length >= course.seats) {
       throw new Error("taken");
     }
-    list.push({ id: String(list.length) + name, name, dish, items: items || [], note, mode });
+    list.push({ id: String(list.length) + name, key, name, dish, items: items || [], note, mode });
     return this.write(s);
   },
   release({ courseId, claimId }) {
@@ -412,7 +421,12 @@ function toast(message) {
 
 $courses.addEventListener("click", async (e) => {
   const open = e.target.closest("[data-open]");
-  if (open) { openForm = open.dataset.open; render(); return; }
+  if (open) {
+    openForm = open.dataset.open;
+    attemptKey = newKey();     // a fresh attempt starts here
+    render();
+    return;
+  }
 
   const close = e.target.closest("[data-close]");
   if (close) { openForm = null; render(); return; }
@@ -475,6 +489,7 @@ $courses.addEventListener("submit", async (e) => {
   if (!form) return;
   e.preventDefault();
 
+  if (submitting) return;      // the first one is still in flight
   const courseId = form.dataset.form;
   const course = BY_ID[courseId];
   const err = form.querySelector("[data-error]");
@@ -531,16 +546,20 @@ $courses.addEventListener("submit", async (e) => {
     dish,
     items,
     amount,
+    key: attemptKey,
     note: form.elements.note.value.trim(),
     mode: modeInput ? modeInput.value : "cooking",
   };
 
   err.hidden = true;
+  submitting = true;
   button.disabled = true;
   button.textContent = "Swearing you in…";
 
   try {
     state = await postClaim(payload);
+    submitting = false;
+    attemptKey = null;
     openForm = null;
     render();
     toast(paying
@@ -549,6 +568,7 @@ $courses.addEventListener("submit", async (e) => {
         ? `${name} — ${items.join(", ")}. A friend of ours.`
         : `${name} — ${course.name}. A friend of ours.`);
   } catch (ex) {
+    submitting = false;        // let them try again with the same key
     button.disabled = false;
     button.textContent = "Swear to it";
     err.textContent = ex.message === "taken"
