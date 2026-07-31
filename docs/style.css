@@ -8,12 +8,12 @@
 
 :root {
   --nero:        #0B0908;
-  --carbone:     #17130F;
-  --carbone-alto:#221C16;
-  --oro:         #B08D3F;
-  --oro-chiaro:  #E3C878;
+  --carbone:     #150F10;
+  --carbone-alto:#241A19;
+  --oro:         #C8A03A;
+  --oro-chiaro:  #F2D88C;
   --sangue:      #7C2323;
-  --sangue-vivo: #A33232;
+  --sangue-vivo: #B93B33;
   --crema:       #EDE4CF;
   --crema-scura: #DED2B6;
   --fumo:        #8B8074;
@@ -44,7 +44,7 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   /* a faint pool of light over the table, top-centre */
-  background-image: radial-gradient(120% 70% at 50% -10%, #1E1813 0%, var(--nero) 62%);
+  background-image: radial-gradient(120% 70% at 50% -10%, #241A15 0%, var(--nero) 64%);
   background-attachment: fixed;
 }
 
@@ -353,7 +353,9 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 .course {
   position: relative;
   border: 1px solid color-mix(in srgb, var(--oro) 32%, transparent);
-  background: linear-gradient(178deg, var(--carbone-alto), var(--carbone));
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(124, 35, 35, 0.14), transparent 60%),
+    linear-gradient(178deg, var(--carbone-alto), var(--carbone));
   padding: 1.5rem 1.35rem 1.35rem;
   transition: border-color 0.5s var(--ease), background 0.6s var(--ease);
 }
@@ -920,8 +922,8 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
   object-fit: cover;
   background: var(--nero);
   /* one ink: crush to grey, then push the greys towards oxblood */
-  filter: grayscale(1) contrast(1.18) brightness(0.82) sepia(0.42)
-          hue-rotate(-24deg) saturate(1.5);
+  filter: grayscale(1) contrast(1.42) brightness(0.76) sepia(0.3)
+          hue-rotate(-18deg) saturate(1.35);
   transition: filter 0.6s var(--ease), opacity 0.6s var(--ease);
 }
 .sheet img:hover {
