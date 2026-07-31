@@ -746,10 +746,8 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
   transition: background 0.2s var(--ease);
 }
 .course.is-printed .pick-box { border-color: var(--sangue); }
-.pick input:checked + .pick-box,
-.pick.is-picked .pick-box { background: var(--oro); }
-.course.is-printed .pick input:checked + .pick-box,
-.course.is-printed .pick.is-picked .pick-box { background: var(--sangue); }
+.pick input:checked + .pick-box { background: var(--oro); }
+.course.is-printed .pick input:checked + .pick-box { background: var(--sangue); }
 .pick input:focus-visible + .pick-box { outline: 2px solid var(--oro-chiaro); outline-offset: 3px; }
 .pick:hover { border-bottom-color: color-mix(in srgb, var(--oro) 35%, transparent); }
 
@@ -797,8 +795,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
   color: var(--fumo);
   transition: all 0.2s var(--ease);
 }
-.amount input:checked + span,
-.amount.is-picked > span { border-color: var(--oro); color: var(--oro-chiaro); }
+.amount input:checked + span { border-color: var(--oro); color: var(--oro-chiaro); }
 .amount input:focus-visible + span { outline: 2px solid var(--oro-chiaro); outline-offset: 3px; }
 .amount-other > span {
   font-family: "Archivo", sans-serif;
@@ -808,8 +805,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
   text-transform: uppercase;
 }
 .course.is-printed .amount > span { border-color: #C1B18A; color: #7A6E5C; }
-.course.is-printed .amount input:checked + span,
-.course.is-printed .amount.is-picked > span { border-color: var(--sangue); color: var(--sangue); }
+.course.is-printed .amount input:checked + span { border-color: var(--sangue); color: var(--sangue); }
 
 .amount-input {
   margin-top: 0.7rem;
@@ -827,9 +823,8 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 }
 
 .modes { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-/* The selected state hangs off `input:checked + span`, not :has(). Chrome
-   does not reliably invalidate :has() when a radio in the same group is
-   implicitly unchecked, which left the highlight stuck on the old choice. */
+/* The box sits on the span rather than the label, so selection can hang off
+   `input:checked + span`, which is supported everywhere. */
 .mode { cursor: pointer; display: inline-flex; }
 .mode input { position: absolute; opacity: 0; pointer-events: none; }
 .mode > span {
@@ -841,12 +836,10 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
   color: var(--fumo);
   transition: all 0.2s var(--ease);
 }
-.mode input:checked + span,
-.mode.is-picked > span { border-color: var(--oro); color: var(--oro-chiaro); }
+.mode input:checked + span { border-color: var(--oro); color: var(--oro-chiaro); }
 .mode input:focus-visible + span { outline: 2px solid var(--oro-chiaro); outline-offset: 3px; }
 .course.is-printed .mode > span { border-color: #C1B18A; color: #7A6E5C; }
-.course.is-printed .mode input:checked + span,
-.course.is-printed .mode.is-picked > span {
+.course.is-printed .mode input:checked + span {
   border-color: var(--sangue); color: var(--sangue);
   background: color-mix(in srgb, var(--sangue) 8%, transparent);
 }
