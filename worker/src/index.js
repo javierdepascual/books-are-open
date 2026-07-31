@@ -1,14 +1,39 @@
 /* ============================================================
-   The Book — state for "A Seat at the Table"
+   The Book — state for "The Oath"
    One Durable Object holds every claim. Because a DO is
    single-threaded, two people hitting the last seat at the same
-   moment can't both win: one gets the seat, one gets told.
+   moment can't both win: one gets it, one gets told.
+
+   Two kinds of course:
+     seats  — a dish somebody cooks. N parties, first come first served.
+     items  — a spread built from parts. Each line is claimed separately,
+              so four people can each bring one thing, and one person can
+              bring three. The name shows against the line.
    ============================================================ */
 
-// Seat counts live here too. The browser can't be trusted with them.
-const SEATS = {
-  antipasto: 1, pane: 1, primo: 2, secondo: 2,
-  insalata: 1, dolce: 1, vino: 1, bibite: 1,
+// The rules live here as well as in the browser. The browser can't be trusted.
+const COURSES = {
+  pane:     { seats: 1 },
+  primo:    { seats: 2 },
+  secondo:  { seats: 2 },
+  insalata: { seats: 1 },
+  dolce:    { seats: 1 },
+
+  antipasto: { items: [
+    "Salami, prosciutto, cheeses, mozzarella",
+    "Olives, roasted peppers, artichokes",
+    "Crackers and bread",
+  ] },
+  vino: { items: [
+    "Three bottles of red",
+    "One bottle of white, rosé or Prosecco",
+  ] },
+  bibite: { items: [
+    "Sparkling water",
+    "Italian sodas, regular sodas",
+    "Ice",
+    "Lemons and oranges",
+  ] },
 };
 
 const ALLOWED = [
@@ -63,25 +88,62 @@ export class Book {
     const claims = await this.claims();
     const courseId = clean(body.courseId, 24);
 
-    if (!SEATS[courseId]) {
+    const course = COURSES[courseId];
+    if (!course) {
       return new Response(JSON.stringify({ error: "no such course" }), { status: 400 });
     }
     const list = claims[courseId] || [];
 
     if (url.pathname === "/claim") {
-      if (list.length >= SEATS[courseId]) {
-        return new Response(JSON.stringify({ error: "taken" }), { status: 409 });
-      }
       const name = clean(body.name, 60);
       if (!name) {
         return new Response(JSON.stringify({ error: "no name" }), { status: 400 });
       }
+
+      const mode = ["cooking", "buying", "money"].includes(body.mode)
+        ? body.mode : "cooking";
+
+      /* Chipping in means Jacky buys and makes it, so on a cooked course
+         the money fills the seat: it really will be on the table. On a list
+         course you don't pick lines, so it can't hold any. */
+      const paying = mode === "money";
+      let items = [];
+      let amount = 0;
+
+      if (paying) {
+        amount = Math.round(Number(body.amount));
+        if (!Number.isFinite(amount) || amount < 1 || amount > 999) {
+          return new Response(JSON.stringify({ error: "bad amount" }), { status: 400 });
+        }
+      } else if (course.items) {
+        items = Array.isArray(body.items)
+          ? body.items.map((i) => clean(i, 80)).filter(Boolean)
+          : [];
+        if (!items.length) {
+          return new Response(JSON.stringify({ error: "no items" }), { status: 400 });
+        }
+        if (items.some((i) => !course.items.includes(i))) {
+          return new Response(JSON.stringify({ error: "unknown item" }), { status: 400 });
+        }
+        // Whoever got here first owns the line.
+        const spoken = new Set(list.filter((c) => c.mode !== "money")
+                                   .flatMap((c) => c.items || []));
+        if (items.some((i) => spoken.has(i))) {
+          return new Response(JSON.stringify({ error: "taken" }), { status: 409 });
+        }
+      } else if (list.length >= course.seats) {
+        // Money on a cooked course means Jacky makes it, so it fills the seat.
+        return new Response(JSON.stringify({ error: "taken" }), { status: 409 });
+      }
+
       list.push({
         id: crypto.randomUUID().slice(0, 8),
         name,
-        dish: clean(body.dish, 60),
+        dish: paying ? "" : clean(body.dish, 60),
+        items,
+        amount,
         note: clean(body.note, 120),
-        mode: ["cooking", "buying", "money"].includes(body.mode) ? body.mode : "cooking",
+        mode,
         at: Date.now(),
       });
       claims[courseId] = list;

@@ -50,12 +50,24 @@
     </defs>
 
     <g class="match-body">
-      <rect class="match-stick" x="56" y="96" width="7" height="180" rx="3"/>
-      <ellipse class="match-head" cx="59.5" cy="94" rx="10" ry="15"/>
-      <g class="flame">
-        <path class="flame-halo" d="M59.5 20 C 82 52, 84 76, 59.5 94 C 35 76, 37 52, 59.5 20 Z"/>
-        <path class="flame-core" d="M59.5 44 C 72 62, 73 79, 59.5 92 C 46 79, 47 62, 59.5 44 Z"/>
+      <!-- Tapered stick with a grain seam: a matchstick, not a pole. -->
+      <path class="match-stick" d="M57.3 104 L61.7 104 L62.8 212 Q59.5 215.5 56.2 212 Z"/>
+      <path class="match-grain" d="M59.5 112 L59.5 203"/>
+      <!-- The head is wider than the stick and slightly egg-shaped. -->
+      <path class="match-head"
+            d="M59.5 86 C 67 86, 70.5 93.5, 69.5 101 C 68.5 109, 64 113.5, 59.5 113.5
+               C 55 113.5, 50.5 109, 49.5 101 C 48.5 93.5, 52 86, 59.5 86 Z"/>
+      <g class="sparks">
+        <circle cx="43" cy="113" r="1.7"/>
+        <circle cx="36" cy="105" r="1.1"/>
+        <circle cx="47" cy="97"  r="1.3"/>
+        <circle cx="33" cy="118" r="0.9"/>
       </g>
+      <g class="flame">
+        <path class="flame-halo" d="M59.5 26 C 84 58, 86 84, 59.5 104 C 33 84, 35 58, 59.5 26 Z"/>
+        <path class="flame-core" d="M59.5 52 C 73 70, 74 88, 59.5 101 C 45 88, 46 70, 59.5 52 Z"/>
+      </g>
+      <path class="smoke" d="M59.5 84 C 52 66, 66 56, 58 36 C 54 26, 60 18, 60 8"/>
     </g>
   </svg>
 

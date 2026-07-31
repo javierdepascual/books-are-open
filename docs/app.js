@@ -11,12 +11,12 @@ const API = window.POTLUCK_API || "";
 const OTHER = "__other__";
 
 const PARTY = {
-  host:    "Hosted by Jacky",
+  host:    "By invitation",
   name:    "An Italian potluck. Eight courses, one table.",
   when:    "Monday, August 17",
   time:    "7:30 pm",
   where:   "Sandra's place, Gardena",
-  signoff: "— Jacky",
+  signoff: "",
 };
 
 /* Menu order, because a menu is a real sequence.
@@ -74,11 +74,30 @@ const COURSES = [
 const MODES = [
   { id: "cooking", label: "I'm cooking it" },
   { id: "buying",  label: "I'm buying it" },
-  { id: "money",   label: "I'm chipping in money" },
+  { id: "money",   label: "Jacky makes it, I chip in" },
 ];
 
 const BY_ID = Object.fromEntries(COURSES.map((c) => [c.id, c]));
-const TOTAL_SEATS = COURSES.reduce((n, c) => n + c.seats, 0);
+
+/* A list course is covered line by line, so its size is its number of
+   lines. A cooked course is covered by parties. Both are "things to bring". */
+const sizeOf = (c) => (c.pick === "list" ? c.options.length : c.seats);
+const TOTAL_SEATS = COURSES.reduce((n, c) => n + sizeOf(c), 0);
+
+// Who has already spoken for each line of a list course.
+function bringers(course) {
+  return (state.claims[course.id] || []).filter((c) => c.mode !== "money");
+}
+function payers(course) {
+  return (state.claims[course.id] || []).filter((c) => c.mode === "money");
+}
+function ownerOf(course, option) {
+  return bringers(course).find((c) => (c.items || []).includes(option)) || null;
+}
+const takenCount = (course) =>
+  course.pick === "list"
+    ? course.options.filter((o) => ownerOf(course, o)).length
+    : (state.claims[course.id] || []).length;
 
 let state = { claims: {} };   // { [courseId]: [ {id, name, dish, note, mode} ] }
 let openForm = null;          // courseId whose form is expanded
@@ -128,11 +147,17 @@ const local = {
     catch { return { claims: {} }; }
   },
   write(s) { localStorage.setItem(this.key, JSON.stringify(s)); return s; },
-  claim({ courseId, name, dish, note, mode }) {
+  claim({ courseId, name, dish, items, note, mode }) {
     const s = this.read();
+    const course = BY_ID[courseId];
     const list = s.claims[courseId] || (s.claims[courseId] = []);
-    if (list.length >= BY_ID[courseId].seats) throw new Error("taken");
-    list.push({ id: String(list.length) + name, name, dish, note, mode });
+    if (course.pick === "list") {
+      const spoken = new Set(list.flatMap((c) => c.items || []));
+      if ((items || []).some((i) => spoken.has(i))) throw new Error("taken");
+    } else if (list.length >= course.seats) {
+      throw new Error("taken");
+    }
+    list.push({ id: String(list.length) + name, name, dish, items: items || [], note, mode });
     return this.write(s);
   },
   release({ courseId, claimId }) {
@@ -147,13 +172,20 @@ const local = {
 const $courses = document.getElementById("courses");
 
 function seatsTaken() {
-  return COURSES.reduce((n, c) => n + Math.min((state.claims[c.id] || []).length, c.seats), 0);
+  return COURSES.reduce((n, c) => n + Math.min(takenCount(c), sizeOf(c)), 0);
 }
 
 function statusFor(course) {
-  const taken = (state.claims[course.id] || []).length;
-  if (taken === 0) return { state: "open", label: course.seats > 1 ? "Two seats" : "Open" };
-  if (taken < course.seats) return { state: "partial", label: "One seat left" };
+  const taken = takenCount(course);
+  const size = sizeOf(course);
+  const left = size - taken;
+  if (taken === 0) {
+    if (course.pick === "list") return { state: "open", label: `${size} to bring` };
+    return { state: "open", label: course.seats > 1 ? "Two seats" : "Open" };
+  }
+  if (left > 0) {
+    return { state: "partial", label: left === 1 ? "One left" : `${left} left` };
+  }
   return { state: "full", label: "Made" };
 }
 
@@ -182,17 +214,30 @@ function seal(course) {
 }
 
 function optionLines(course) {
-  const taken = (state.claims[course.id] || []).length;
-  // Once every seat is spoken for and the dish is chosen, the menu of
-  // alternatives is just noise. A shopping list stays useful either way.
-  if (course.pick === "one" && taken >= course.seats) return "";
+  if (course.pick === "one") {
+    // Once the seats are taken and the dish is chosen, the alternatives
+    // are just noise.
+    if (takenCount(course) >= course.seats) return "";
+    const lines = course.options.map((o) => `
+      <li class="option">
+        <span class="option-mark">&#8226;</span>
+        <span>${esc(o)}</span>
+        <span class="option-rule"></span>
+      </li>`).join("");
+    return `<ul class="options">${lines}</ul>`;
+  }
 
-  const lines = course.options.map((o) => `
-    <li class="option">
-      <span class="option-mark">&#8226;</span>
-      <span>${esc(o)}</span>
-      <span class="option-rule"></span>
-    </li>`).join("");
+  // A list course is a ledger: every line shows who is bringing it.
+  const lines = course.options.map((o) => {
+    const owner = ownerOf(course, o);
+    return `
+      <li class="option${owner ? " is-taken" : ""}">
+        <span class="option-mark">${owner ? "&#10003;" : "&#8226;"}</span>
+        <span>${esc(o)}</span>
+        <span class="option-rule"></span>
+        <span class="option-owner">${owner ? esc(owner.name) : "open"}</span>
+      </li>`;
+  }).join("");
   return `<ul class="options">${lines}</ul>`;
 }
 
@@ -200,14 +245,35 @@ function seatRows(course) {
   const claims = state.claims[course.id] || [];
   const rows = [];
 
+  // On a list course the names already sit against their lines, so the
+  // record only has to carry the note, the mode, and a way out.
+  if (course.pick === "list") {
+    if (!claims.length) return "";
+    return `<div class="record">${claims.map((c) => {
+      const mode = MODES.find((m) => m.id === c.mode);
+      return `
+        <div class="seat">
+          <p class="seat-name">${esc(c.name)}</p>
+          ${c.mode === "money" ? `<p class="seat-dish">$${esc(c.amount || 0)} toward it</p>` : ""}
+          ${c.note ? `<p class="seat-note">${esc(c.note)}</p>` : ""}
+          ${c.mode === "money" ? `<span class="seat-mode">Jacky brings it</span>`
+             : mode && mode.id !== "cooking" ? `<span class="seat-mode">${esc(mode.label)}</span>` : ""}
+          <button class="seat-strike" data-strike="${esc(course.id)}" data-claim="${esc(c.id)}">break the oath</button>
+        </div>`;
+    }).join("")}</div>`;
+  }
+
   claims.forEach((c) => {
     const mode = MODES.find((m) => m.id === c.mode);
+    const paid = c.mode === "money";
     rows.push(`
       <div class="seat">
         <p class="seat-name">${esc(c.name)}</p>
+        ${paid ? `<p class="seat-dish">$${esc(c.amount || 0)} toward it</p>` : ""}
         ${c.dish ? `<p class="seat-dish">${esc(c.dish)}</p>` : ""}
         ${c.note ? `<p class="seat-note">${esc(c.note)}</p>` : ""}
-        ${mode && mode.id !== "cooking" ? `<span class="seat-mode">${esc(mode.label)}</span>` : ""}
+        ${paid ? `<span class="seat-mode">Jacky brings it</span>`
+               : mode && mode.id !== "cooking" ? `<span class="seat-mode">${esc(mode.label)}</span>` : ""}
         <button class="seat-strike" data-strike="${esc(course.id)}" data-claim="${esc(c.id)}">break the oath</button>
       </div>`);
   });
@@ -221,11 +287,29 @@ function seatRows(course) {
 }
 
 function claimForm(course) {
-  const taken = (state.claims[course.id] || []).length;
-  const full = taken >= course.seats;
-  if (full) return "";
+  if (takenCount(course) >= sizeOf(course)) return "";
 
   const isOpen = openForm === course.id;
+
+  // On a list course you tick whatever you're bringing, and you can tick
+  // more than one. Lines somebody else already took aren't offered.
+  const free = course.pick === "list"
+    ? course.options.filter((o) => !ownerOf(course, o))
+    : [];
+
+  const ticks = course.pick === "list" ? `
+    <div class="field">
+      <span class="field-label">What you'll bring</span>
+      <div class="picks">
+        ${free.map((o) => `
+          <label class="pick">
+            <input type="checkbox" name="item-${course.id}" value="${esc(o)}">
+            <span class="pick-box"></span>
+            <span>${esc(o)}</span>
+          </label>`).join("")}
+      </div>
+      <p class="hint">Tick everything you're bringing</p>
+    </div>` : "";
 
   const picks = course.pick === "one" ? `
     <div class="field">
@@ -263,6 +347,25 @@ function claimForm(course) {
         </div>
 
         ${picks}
+        ${ticks}
+
+        <div class="field money" data-money hidden>
+          <span class="field-label">How much</span>
+          <div class="amounts">
+            ${[20, 25, 30].map((v, i) => `
+              <label class="amount">
+                <input type="radio" name="amount-${course.id}" value="${v}"${i === 0 ? " checked" : ""}>
+                <span>$${v}</span>
+              </label>`).join("")}
+            <label class="amount amount-other">
+              <input type="radio" name="amount-${course.id}" value="other">
+              <span>Other</span>
+            </label>
+          </div>
+          <input type="number" name="amountOther" min="1" max="999" step="1"
+                 placeholder="$" class="amount-input" hidden>
+          <p class="hint">$20 is the going rate. Jacky buys and makes it.</p>
+        </div>
 
         <div class="field">
           <span class="field-label">How</span>
@@ -331,7 +434,13 @@ function render() {
 
   if (openForm) {
     const form = $courses.querySelector(`[data-form="${openForm}"]`);
-    if (form) form.querySelector('input[name="name"]').focus();
+    if (form) {
+      // Bring the form into view ourselves, then focus without letting the
+      // browser scroll again. Left alone, focus on a phone jumps the page and
+      // leaves half the form under the keyboard.
+      form.scrollIntoView({ block: "center", behavior: "smooth" });
+      form.querySelector('input[name="name"]').focus({ preventScroll: true });
+    }
   }
   firstPaint = false;
 }
@@ -341,7 +450,9 @@ function render() {
 function paintParticulars() {
   document.getElementById("host-line").textContent = PARTY.host;
   document.getElementById("party-line").textContent = PARTY.name;
-  document.getElementById("handled-sig").textContent = PARTY.signoff;
+  const sig = document.getElementById("handled-sig");
+  sig.textContent = PARTY.signoff;
+  sig.hidden = !PARTY.signoff;
   document.getElementById("particulars").innerHTML = [
     ["Day", PARTY.when],
     ["Time", PARTY.time],
@@ -388,12 +499,36 @@ $courses.addEventListener("click", async (e) => {
 });
 
 $courses.addEventListener("change", (e) => {
-  const radio = e.target.closest('input[type="radio"][name^="dish-"]');
-  if (!radio) return;
-  const box = radio.closest(".field").querySelector("[data-other]");
-  if (!box) return;
-  box.hidden = radio.value !== OTHER;
-  if (!box.hidden) box.querySelector("input").focus();
+  const dish = e.target.closest('input[type="radio"][name^="dish-"]');
+  if (dish) {
+    const box = dish.closest(".field").querySelector("[data-other]");
+    if (box) {
+      box.hidden = dish.value !== OTHER;
+      if (!box.hidden) box.querySelector("input").focus();
+    }
+  }
+
+  // Chipping in means you're not bringing a thing, so stop asking which.
+  const mode = e.target.closest('input[type="radio"][name^="mode-"]');
+  if (mode) {
+    const form = mode.closest("form");
+    const paying = mode.value === "money";
+    form.querySelectorAll(".picks").forEach((p) => {
+      const field = p.closest(".field");
+      if (field) field.hidden = paying;
+    });
+    const money = form.querySelector("[data-money]");
+    if (money) money.hidden = !paying;
+  }
+
+  const amount = e.target.closest('input[type="radio"][name^="amount-"]');
+  if (amount) {
+    const box = amount.closest(".field").querySelector(".amount-input");
+    if (box) {
+      box.hidden = amount.value !== "other";
+      if (!box.hidden) box.focus();
+    }
+  }
 });
 
 $courses.addEventListener("submit", async (e) => {
@@ -416,7 +551,32 @@ $courses.addEventListener("submit", async (e) => {
   const dishInput = form.querySelector(`input[name="dish-${courseId}"]:checked`);
   const modeInput = form.querySelector(`input[name="mode-${courseId}"]:checked`);
 
-  let dish = dishInput ? dishInput.value : "";
+  const modeInputEarly = form.querySelector(`input[name="mode-${courseId}"]:checked`);
+  const paying = modeInputEarly && modeInputEarly.value === "money";
+
+  let amount = 0;
+  if (paying) {
+    const picked = form.querySelector(`input[name="amount-${courseId}"]:checked`);
+    amount = picked && picked.value === "other"
+      ? Math.round(Number(form.elements.amountOther.value))
+      : Math.round(Number(picked ? picked.value : 20));
+    if (!Number.isFinite(amount) || amount < 1 || amount > 999) {
+      err.textContent = "Put in an amount between $1 and $999.";
+      err.hidden = false;
+      return;
+    }
+  }
+
+  const items = paying ? [] :
+    [...form.querySelectorAll(`input[name="item-${courseId}"]:checked`)]
+      .map((i) => i.value);
+  if (!paying && course.pick === "list" && !items.length) {
+    err.textContent = "Tick at least one thing, or nobody knows what you're bringing.";
+    err.hidden = false;
+    return;
+  }
+
+  let dish = paying ? "" : (dishInput ? dishInput.value : "");
   if (dish === OTHER) {
     dish = form.elements.other.value.trim();
     if (!dish) {
@@ -430,6 +590,8 @@ $courses.addEventListener("submit", async (e) => {
     courseId,
     name,
     dish,
+    items,
+    amount,
     note: form.elements.note.value.trim(),
     mode: modeInput ? modeInput.value : "cooking",
   };
@@ -442,7 +604,11 @@ $courses.addEventListener("submit", async (e) => {
     state = await postClaim(payload);
     openForm = null;
     render();
-    toast(`${name} — ${course.name}. A friend of ours.`);
+    toast(paying
+      ? `${name} — $${amount} toward ${course.name}. A friend of ours.`
+      : course.pick === "list"
+        ? `${name} — ${items.join(", ")}. A friend of ours.`
+        : `${name} — ${course.name}. A friend of ours.`);
   } catch (ex) {
     button.disabled = false;
     button.textContent = "Swear to it";
@@ -470,7 +636,11 @@ async function refresh() {
 /* ?demo shows the page half full, for looking at it. Never writes anywhere. */
 const DEMO = {
   claims: {
-    antipasto: [{ id: "d1", name: "Marco & Elena", dish: "The whole board", note: "Bringing a wooden board too", mode: "buying" }],
+    antipasto: [
+      { id: "d1", name: "Marco & Elena", items: ["Salami, prosciutto, cheeses, mozzarella"], note: "Bringing a wooden board too", mode: "buying" },
+      { id: "d5", name: "Nick", items: ["Crackers and bread"], note: "", mode: "buying" },
+    ],
+    vino: [{ id: "d6", name: "Javi & Jacky", items: ["Three bottles of red"], note: "", mode: "buying" }],
     primo: [{ id: "d2", name: "Javi & Jacky", dish: "Lasagna", note: "", mode: "cooking" }],
     dolce: [{ id: "d3", name: "Sandra", dish: "Tiramisu", note: "Made the night before", mode: "cooking" }],
     secondo: [{ id: "d4", name: "Nick", dish: "Chicken Parmesan", note: "", mode: "cooking" }],

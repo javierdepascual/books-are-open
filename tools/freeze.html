@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- Freezes the intro at an exact moment so the movement can be inspected.
+
+     Two things that do NOT work, both tried:
+       - headless --virtual-time-budget: runs the animation to the end and
+         then shoots, so every "frame" comes out identical;
+       - rewriting animation-delay: does not restart an animation that has
+         already finished, so you photograph the final state every time.
+
+     What works is the Web Animations API: pause every animation and set its
+     currentTime, which is measured from the start including its own delay.
+
+     Usage: freeze.html?t=0.30   (&w=430 changes the frame width)          -->
+<html><head><meta charset="utf-8">
+<style>
+  body { margin:0; background:#111; color:#ddd; font:13px ui-monospace,monospace; }
+  iframe { border:0; display:block; }
+  #t { padding:6px 8px; font-size:15px; background:#000; }
+</style></head>
+<body>
+<div id="t">…</div>
+<iframe id="f"></iframe>
+<script>
+const q = new URLSearchParams(location.search);
+const T = parseFloat(q.get('t') || '0.3');
+const W = parseInt(q.get('w') || '430', 10);
+
+const f = document.getElementById('f');
+f.width = W; f.height = 760;
+f.src = '../docs/index.html?demo&intro';
+
+f.addEventListener('load', () => setTimeout(() => {
+  const d = f.contentDocument;
+  const anims = d.getAnimations();
+  anims.forEach(a => {
+    a.pause();
+    try { a.currentTime = T * 1000; } catch (e) { /* finished, not seekable */ }
+  });
+
+  // The page snuffs the intro on a timer. Put it back if it goes.
+  const intro = d.getElementById('intro');
+  if (intro) {
+    const parent = intro.parentNode;
+    intro.style.setProperty('opacity', '1', 'important');
+    intro.style.setProperty('visibility', 'visible', 'important');
+    new MutationObserver(() => {
+      if (!intro.isConnected) parent.insertBefore(intro, parent.firstChild);
+      intro.classList.remove('is-done');
+    }).observe(parent, { childList: true });
+  }
+
+  document.getElementById('t').textContent =
+    'frozen at t = ' + T.toFixed(2) + 's   (' + anims.length + ' animations paused)';
+}, 700));
+</script>
+</body></html>
