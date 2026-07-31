@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<style>body{margin:0;background:#fff;font:14px ui-monospace,monospace}pre{padding:10px;font-size:16px}</style>
+</head><body>
+<iframe id="f" src="../docs/index.html?demo&nointro=1&form=pane" width="430" height="300" style="border:0;opacity:0;position:absolute"></iframe>
+<pre id="o">…</pre>
+<script>
+const log = [];
+document.getElementById('f').addEventListener('load', () => setTimeout(() => {
+  const d = document.getElementById('f').contentDocument;
+  const form = d.querySelector('[data-form="pane"]');
+  if (!form) { document.getElementById('o').textContent = 'form not open'; return; }
+
+  const dishField = form.querySelector('.picks').closest('.field');
+  const money = form.querySelector('[data-money]');
+  log.push('default  → dish field hidden=' + dishField.hidden + ', money hidden=' + money.hidden);
+
+  // switch to chipping in
+  const pay = form.querySelector('input[value="money"]');
+  pay.checked = true;
+  pay.dispatchEvent(new Event('change', { bubbles: true }));
+  log.push('money    → dish field hidden=' + dishField.hidden + ', money hidden=' + money.hidden);
+  log.push('amounts  → ' + [...form.querySelectorAll('.amount span')].map(s => s.textContent).join(' '));
+  log.push('default $ → ' + (form.querySelector('input[name^="amount-"]:checked') || {}).value);
+
+  // and back
+  const cook = form.querySelector('input[value="cooking"]');
+  cook.checked = true;
+  cook.dispatchEvent(new Event('change', { bubbles: true }));
+  log.push('back     → dish field hidden=' + dishField.hidden + ', money hidden=' + money.hidden);
+
+  document.getElementById('o').textContent = log.join('\n');
+}, 1200));
+</script></body></html>

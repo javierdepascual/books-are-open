@@ -1,0 +1,20 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<style>body{margin:0;background:#fff;font:14px ui-monospace,monospace}pre{padding:10px;font-size:16px}</style>
+</head><body>
+<iframe id="f" src="../docs/index.html?demo&nointro=1" width="430" height="300" style="border:0;opacity:0;position:absolute"></iframe>
+<pre id="o">auditing…</pre>
+<script>
+document.getElementById('f').addEventListener('load', () => setTimeout(() => {
+  const d = document.getElementById('f').contentDocument;
+  const out = [...d.querySelectorAll('.course')].map(c => {
+    const name = c.querySelector('.course-name').textContent.trim();
+    const status = c.querySelector('.status').textContent.trim();
+    const lines = [...c.querySelectorAll('.option')].length;
+    const owners = [...c.querySelectorAll('.option-owner')].map(o => o.textContent.trim());
+    return name.padEnd(12) + ' status=' + status.padEnd(14) +
+           ' lines=' + lines + (owners.length ? '  owners=[' + owners.join('|') + ']' : '');
+  });
+  out.push('TALLY: ' + d.querySelector('.tally-count').textContent.trim());
+  document.getElementById('o').textContent = out.join('\n');
+}, 1200));
+</script></body></html>
