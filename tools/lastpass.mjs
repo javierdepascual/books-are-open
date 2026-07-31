@@ -101,11 +101,27 @@ await claimsThrough(cr, "Android", { ...devices["Pixel 7"] });
   note.push(`release control present: ${strikeCount > 0}`);
   if (strikeCount) {
     await strike.tap();
+    await page.waitForSelector('.strike-confirm', { timeout: 8000 })
+      .catch(() => bad("release", "the in-page confirmation never appeared"));
+
+    // a wrong name must change nothing, and must say so
+    await page.locator('.strike-input').fill("Somebody Else");
+    await page.locator('.strike-go').tap();
+    await page.waitForTimeout(1500);
+    const afterWrong = ((await book()).claims.dolce || []).length;
+    const warned = await page.locator('[data-strike-error]').isVisible().catch(() => false);
+    note.push(`wrong name: ${afterWrong} claim(s) left, warned = ${warned}`);
+    if (afterWrong !== 1) bad("release", "a wrong name still removed the claim");
+    if (!warned) bad("release", "a wrong name was rejected silently");
+
+    // the right name releases it
+    await page.locator('.strike-input').fill("Regretful Rita");
+    await page.locator('.strike-go').tap();
     await page.waitForTimeout(2500);
     const left = ((await book()).claims.dolce || []).length;
-    note.push(`after release: ${left} claim(s) left, dialog appeared = ${dialogSeen}`);
-    if (!dialogSeen) bad("release", "no prompt appeared — in an in-app browser it may be blocked outright");
+    note.push(`right name: ${left} claim(s) left, native dialog used = ${dialogSeen}`);
     if (left !== 0) bad("release", `the claim survived a confirmed release (${left} left)`);
+    if (dialogSeen) bad("release", "still depends on a native dialog");
   }
   await ctx.close();
 }
