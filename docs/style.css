@@ -28,6 +28,8 @@
   --step-2:  clamp(1.6rem, 1.35rem + 1.2vw, 2.4rem);
   --step-3:  clamp(2.6rem, 1.9rem + 3.4vw, 5.2rem);
 
+  --display: "Bodoni Moda", Didot, serif;
+
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
@@ -188,7 +190,7 @@ body.intro-running { overflow: hidden; }
   margin: 0;
   transform: translateY(-16vh);
   text-align: center;
-  font-family: "Bodoni Moda", Didot, serif;
+  font-family: var(--display);
   color: var(--crema);
   line-height: 0.9;
   display: grid;
@@ -209,6 +211,18 @@ body.intro-running { overflow: hidden; }
 @keyframes word-dissolve {
   0%   { opacity: 0; filter: blur(14px); transform: translateY(-16vh) scale(1.06); }
   100% { opacity: 1; filter: blur(0);    transform: translateY(-16vh) scale(1); }
+}
+
+/* Coarse, blurred, barely there: the nap of a booth rather than film grain. */
+.velvet {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='340'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.02' numOctaves='2'/%3E%3CfeGaussianBlur stdDeviation='1.2'/%3E%3C/filter%3E%3Crect width='340' height='340' filter='url(%23v)'/%3E%3C/svg%3E");
+  background-size: 340px 340px;
 }
 
 .grain {
@@ -254,7 +268,7 @@ body.intro-running { overflow: hidden; }
 
 .wordmark {
   margin: 0;
-  font-family: "Bodoni Moda", Didot, serif;
+  font-family: var(--display);
   font-weight: 400;
   font-size: var(--step-3);
   line-height: 0.88;
@@ -276,7 +290,7 @@ body.intro-running { overflow: hidden; }
 .dek {
   margin: 1.5rem auto 0;
   max-width: 26ch;
-  font-family: "Bodoni Moda", serif;
+  font-family: var(--display);
   font-style: italic;
   font-size: var(--step-1);
   line-height: 1.35;
@@ -311,7 +325,7 @@ body.intro-running { overflow: hidden; }
   border: 1px solid color-mix(in srgb, var(--oro) 40%, transparent);
 }
 .tally-count {
-  font-family: "Bodoni Moda", serif;
+  font-family: var(--display);
   font-size: var(--step-1);
   color: var(--oro-chiaro);
   font-variant-numeric: tabular-nums;
@@ -402,7 +416,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 
 .numeral {
   flex-shrink: 0;
-  font-family: "Bodoni Moda", serif;
+  font-family: var(--display);
   font-size: var(--step--1);
   letter-spacing: 0.16em;
   color: var(--oro);
@@ -418,7 +432,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 
 .course-name {
   margin: 0.55rem 0 0;
-  font-family: "Bodoni Moda", serif;
+  font-family: var(--display);
   font-weight: 400;
   font-size: var(--step-2);
   line-height: 1.02;
@@ -466,7 +480,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
   transform: translateY(-0.25em);
 }
 .option-mark {
-  font-family: "Bodoni Moda", serif;
+  font-family: var(--display);
   color: var(--oro);
   opacity: 0.6;
 }
@@ -512,7 +526,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 }
 .seat-dish {
   margin: 0.15rem 0 0;
-  font-family: "Bodoni Moda", serif;
+  font-family: var(--display);
   font-style: italic;
   font-size: var(--step-1);
   line-height: 1.2;
@@ -581,7 +595,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
   fill: currentColor;
 }
 .seal-numeral {
-  font-family: "Bodoni Moda", serif;
+  font-family: var(--display);
   font-size: 30px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -766,7 +780,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 .amounts { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .amount {
   cursor: pointer;
-  font-family: "Bodoni Moda", serif;
+  font-family: var(--display);
   font-size: var(--step-1);
   line-height: 1;
   padding: 0.4em 0.7em;
@@ -878,7 +892,23 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
    is done in CSS so the photographs keep the palette instead of fighting it.
                                                                         */
 
-.attire { margin-top: clamp(3rem, 8vw, 5rem); text-align: center; }
+.attire {
+  position: relative;
+  margin-top: clamp(3rem, 8vw, 5rem);
+  text-align: center;
+}
+/* The one place the board's own print is allowed in, at a whisper. */
+.attire::before {
+  content: "";
+  position: absolute;
+  inset: -1.5rem -1rem;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22200%22%20viewBox%3D%220%200%20200%20200%22%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20fill%3D%22%238A6A2E%22%2F%3E%3Cg%20transform%3D%22rotate%28-18%2028%2034%29%22%3E%3Cellipse%20cx%3D%2228%22%20cy%3D%2234%22%20rx%3D%226.8%22%20ry%3D%224.7%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M15%2C34%20a13%2C9%200%200%201%2014.3%2C-8.1%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M34.5%2C28.6%20a13%2C9%200%200%201%20-2.6%2C15.3%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M30.6%2C43.0%20a13%2C9%200%200%201%20-15.6%2C-2.7%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%2822%2096%2022%29%22%3E%3Cellipse%20cx%3D%2296%22%20cy%3D%2222%22%20rx%3D%227.8%22%20ry%3D%225.2%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M81%2C22%20a15%2C10%200%200%201%2016.5%2C-9.0%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M103.5%2C16.0%20a15%2C10%200%200%201%20-3.0%2C17.0%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M99.0%2C32.0%20a15%2C10%200%200%201%20-18.0%2C-3.0%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%28-8%20160%2044%29%22%3E%3Cellipse%20cx%3D%22160%22%20cy%3D%2244%22%20rx%3D%226.2%22%20ry%3D%224.2%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M148%2C44%20a12%2C8%200%200%201%2013.2%2C-7.2%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M166.0%2C39.2%20a12%2C8%200%200%201%20-2.4%2C13.6%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M162.4%2C52.0%20a12%2C8%200%200%201%20-14.4%2C-2.4%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%2812%2052%2096%29%22%3E%3Cellipse%20cx%3D%2252%22%20cy%3D%2296%22%20rx%3D%228.3%22%20ry%3D%225.7%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M36%2C96%20a16%2C11%200%200%201%2017.6%2C-9.9%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M60.0%2C89.4%20a16%2C11%200%200%201%20-3.2%2C18.7%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M55.2%2C107.0%20a16%2C11%200%200%201%20-19.2%2C-3.3%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%28-24%20124%20104%29%22%3E%3Cellipse%20cx%3D%22124%22%20cy%3D%22104%22%20rx%3D%226.8%22%20ry%3D%224.7%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M111%2C104%20a13%2C9%200%200%201%2014.3%2C-8.1%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M130.5%2C98.6%20a13%2C9%200%200%201%20-2.6%2C15.3%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M126.6%2C113.0%20a13%2C9%200%200%201%20-15.6%2C-2.7%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%2816%20184%20120%29%22%3E%3Cellipse%20cx%3D%22184%22%20cy%3D%22120%22%20rx%3D%225.7%22%20ry%3D%224.2%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M173%2C120%20a11%2C8%200%200%201%2012.1%2C-7.2%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M189.5%2C115.2%20a11%2C8%200%200%201%20-2.2%2C13.6%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M186.2%2C128.0%20a11%2C8%200%200%201%20-13.2%2C-2.4%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%2826%2020%20158%29%22%3E%3Cellipse%20cx%3D%2220%22%20cy%3D%22158%22%20rx%3D%227.3%22%20ry%3D%225.2%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M6%2C158%20a14%2C10%200%200%201%2015.4%2C-9.0%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M27.0%2C152.0%20a14%2C10%200%200%201%20-2.8%2C17.0%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M22.8%2C168.0%20a14%2C10%200%200%201%20-16.8%2C-3.0%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%28-14%2084%20172%29%22%3E%3Cellipse%20cx%3D%2284%22%20cy%3D%22172%22%20rx%3D%226.2%22%20ry%3D%224.7%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M72%2C172%20a12%2C9%200%200%201%2013.2%2C-8.1%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M90.0%2C166.6%20a12%2C9%200%200%201%20-2.4%2C15.3%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M86.4%2C181.0%20a12%2C9%200%200%201%20-14.4%2C-2.7%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%288%20150%20182%29%22%3E%3Cellipse%20cx%3D%22150%22%20cy%3D%22182%22%20rx%3D%227.8%22%20ry%3D%225.2%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M135%2C182%20a15%2C10%200%200%201%2016.5%2C-9.0%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M157.5%2C176.0%20a15%2C10%200%200%201%20-3.0%2C17.0%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M153.0%2C192.0%20a15%2C10%200%200%201%20-18.0%2C-3.0%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%28-30%20178%2074%29%22%3E%3Cellipse%20cx%3D%22178%22%20cy%3D%2274%22%20rx%3D%225.2%22%20ry%3D%223.6%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M168%2C74%20a10%2C7%200%200%201%2011.0%2C-6.3%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M183.0%2C69.8%20a10%2C7%200%200%201%20-2.0%2C11.9%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M180.0%2C81.0%20a10%2C7%200%200%201%20-12.0%2C-2.1%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%2834%2062%2010%29%22%3E%3Cellipse%20cx%3D%2262%22%20cy%3D%2210%22%20rx%3D%225.2%22%20ry%3D%223.6%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M52%2C10%20a10%2C7%200%200%201%2011.0%2C-6.3%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M67.0%2C5.8%20a10%2C7%200%200%201%20-2.0%2C11.9%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M64.0%2C17.0%20a10%2C7%200%200%201%20-12.0%2C-2.1%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22rotate%28-6%20112%20150%29%22%3E%3Cellipse%20cx%3D%22112%22%20cy%3D%22150%22%20rx%3D%225.2%22%20ry%3D%223.6%22%20fill%3D%22%231A1210%22%2F%3E%3Cpath%20d%3D%22M102%2C150%20a10%2C7%200%200%201%2011.0%2C-6.3%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.4%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M117.0%2C145.8%20a10%2C7%200%200%201%20-2.0%2C11.9%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223.2%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M114.0%2C157.0%20a10%2C7%200%200%201%20-12.0%2C-2.1%22%20fill%3D%22none%22%20stroke%3D%22%231A1210%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  background-size: 190px 190px;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: -1;
+  mask-image: radial-gradient(120% 90% at 50% 40%, #000 35%, transparent 78%);
+}
 
 .attire-eyebrow {
   margin: 0 0 0.9rem;
@@ -891,7 +921,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 
 .attire-title {
   margin: 0;
-  font-family: "Bodoni Moda", serif;
+  font-family: var(--display);
   font-weight: 400;
   font-size: var(--step-2);
   line-height: 1.05;
@@ -907,7 +937,9 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 }
 
 .sheet {
-  margin: 2rem 0 0;
+  width: 100vw;
+  margin: 2rem 0 0 calc(50% - 50vw);
+  border-inline: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
@@ -979,7 +1011,7 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 }
 .handled-sig {
   margin: 0.9rem 0 0;
-  font-family: "Bodoni Moda", serif;
+  font-family: var(--display);
   font-style: italic;
   color: var(--crema-scura);
 }

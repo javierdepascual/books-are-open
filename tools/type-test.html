@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- Same page, four display faces, side by side. Nothing in docs/ changes:
+     each frame just gets --display overridden after it loads. -->
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bevan&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#000; display:flex; gap:2px;
+         font:600 12px/1 Archivo, system-ui, sans-serif; color:#F2D88C;
+         letter-spacing:.2em; text-transform:uppercase; }
+  .col { width:430px; }
+  .lab { padding:10px; background:#141010; }
+  iframe { width:430px; height:1120px; border:0; display:block; }
+</style></head>
+<body>
+<script>
+const FACES = [
+  ['Bodoni Moda · actual', null],
+  ['Abril Fatface',        '"Abril Fatface", serif'],
+  ['Bevan · slab 70s',     '"Bevan", serif'],
+  ['DM Serif Display',     '"DM Serif Display", serif'],
+];
+
+FACES.forEach(([label, face]) => {
+  const col = document.createElement('div');
+  col.className = 'col';
+  col.innerHTML = '<div class="lab">' + label + '</div>';
+  const f = document.createElement('iframe');
+  f.src = '../docs/index.html?demo&nointro=1';
+  f.addEventListener('load', () => {
+    const d = f.contentDocument;
+    // pull the webfonts into the frame too
+    const link = d.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bevan&family=DM+Serif+Display:ital@0;1&display=swap';
+    d.head.appendChild(link);
+    if (face) d.documentElement.style.setProperty('--display', face);
+  });
+  col.appendChild(f);
+  document.body.appendChild(col);
+});
+</script>
+</body></html>
