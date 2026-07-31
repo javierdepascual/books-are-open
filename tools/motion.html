@@ -8,7 +8,7 @@
   #log { padding:8px; font-size:15px; }
 </style></head>
 <body>
-<iframe id="f" src="../docs/index.html?demo"></iframe>
+<iframe id="f" src="../docs/index.html?demo&nointro=1"></iframe>
 <pre id="log">arming…</pre>
 <script>
 const f = document.getElementById('f');
@@ -29,6 +29,7 @@ f.addEventListener('load', () => setTimeout(() => {
     setTimeout(() => {
       const card = [...d.querySelectorAll('.course')]
         .find(c => c.textContent.includes("L'Insalata"));
+      if (card) card.scrollIntoView({ block: 'center' });
       const seal = card && card.querySelector('.seal');
       log([
         'card classes : ' + (card ? card.className : 'none'),

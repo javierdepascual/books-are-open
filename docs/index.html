@@ -22,9 +22,9 @@
 <!-- Decide before first paint, so a returning visitor never sees a black flash. -->
 <script>
   try {
-    if (!location.search.includes("intro") &&
+    if (location.search.includes("nointro") || (!location.search.includes("intro") &&
         (localStorage.getItem("the-oath-intro") ||
-         matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+         matchMedia("(prefers-reduced-motion: reduce)").matches))) {
       document.documentElement.className = "no-intro";
     }
   } catch (e) { document.documentElement.className = "no-intro"; }
