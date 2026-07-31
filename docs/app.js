@@ -571,11 +571,18 @@ $courses.addEventListener("submit", async (e) => {
     submitting = false;        // let them try again with the same key
     button.disabled = false;
     button.textContent = "Swear to it";
-    err.textContent = ex.message === "taken"
+    const lost = ex.message === "taken";
+    err.textContent = lost
       ? "Somebody swore to that one first. Pick another course."
       : "Couldn't reach the book. Try again in a second.";
     err.hidden = false;
-    if (ex.message === "taken") { await refresh(); }
+    if (lost) {
+      /* Refreshing redraws the card and takes this form, and the message
+         inside it, away with it. Say it somewhere that outlives the redraw
+         or the guest just watches the form vanish for no stated reason. */
+      toast(`${course.name} went to somebody else. Nothing was written down for you.`);
+      await refresh();
+    }
   }
 });
 
