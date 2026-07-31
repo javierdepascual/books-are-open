@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<style>body{margin:0;background:#fff;font:14px ui-monospace,monospace}pre{padding:10px;font-size:15px;white-space:pre-wrap}</style>
+</head><body><pre id="o">…</pre>
+<iframe id="f" src="../docs/kitchen.html?book=rehearsal" width="420" height="200" style="position:absolute;opacity:0;border:0"></iframe>
+<script>
+const errs = [];
+const f = document.getElementById('f');
+f.addEventListener('load', () => {
+  const w = f.contentWindow, d = f.contentDocument;
+  w.addEventListener('error', e => errs.push('ERROR: ' + e.message + ' @' + (e.filename||'').split('/').pop() + ':' + e.lineno));
+  setTimeout(() => {
+    errs.push('COURSES: ' + (typeof w.COURSES) + (w.COURSES ? ' len=' + w.COURSES.length : ''));
+    errs.push('sizeOf : ' + (typeof w.sizeOf));
+    errs.push('BOOK   : ' + w.BOOK);
+    errs.push('stamp  : ' + d.getElementById('k-when').textContent);
+    errs.push('tiles  : ' + d.getElementById('k-tiles').innerHTML.trim().length + ' chars');
+    errs.push('people : ' + d.getElementById('k-people').textContent.trim().slice(0, 80));
+    document.getElementById('o').textContent = errs.join('\n');
+  }, 2500);
+});
+</script></body></html>

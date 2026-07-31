@@ -38,15 +38,20 @@ body.kitchen { padding-bottom: 4rem; }
 
 /* ---------------------------------------------------------- tiles */
 
+/* Each tile carries its own rule. Painting the grid's background instead
+   leaves the odd empty cell showing as a gold block when the row doesn't
+   fill, which looks like a bug because it is one. */
 .k-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
-  gap: 1px;
+  gap: 0.6rem;
   margin-top: clamp(1.5rem, 5vw, 2.5rem);
-  background: color-mix(in srgb, var(--oro) 25%, transparent);
-  border: 1px solid color-mix(in srgb, var(--oro) 25%, transparent);
 }
-.k-tile { background: var(--nero); padding: 1.1rem 0.9rem; text-align: center; }
+.k-tile {
+  border: 1px solid color-mix(in srgb, var(--oro) 28%, transparent);
+  padding: 1.1rem 0.9rem;
+  text-align: center;
+}
 .k-tile-big {
   margin: 0;
   font-family: var(--display);
