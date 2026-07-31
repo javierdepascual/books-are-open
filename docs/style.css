@@ -573,6 +573,46 @@ main { width: var(--shell); margin-inline: auto; padding-bottom: 5rem; }
 }
 .seat-strike:hover { color: var(--sangue); }
 
+/* Breaking an oath is confirmed here, in the card. */
+.strike-confirm {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid color-mix(in srgb, var(--oro) 30%, transparent);
+  display: grid;
+  gap: 0.5rem;
+}
+.course.is-printed .strike-confirm { border-top-color: #C1B18A; }
+.strike-input {
+  width: 100%;
+  background: color-mix(in srgb, var(--nero) 55%, transparent);
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--oro) 45%, transparent);
+  color: var(--crema);
+  font-family: "Courier Prime", monospace;
+  font-size: var(--step-0);
+  padding: 0.6rem 0.7rem;
+}
+.course.is-printed .strike-input {
+  background: #E4D9BE; border-bottom-color: var(--sangue); color: var(--inchiostro);
+}
+.strike-actions { display: flex; gap: 0.6rem; align-items: center; }
+.strike-go {
+  background: none;
+  border: 1px solid var(--sangue-vivo);
+  color: var(--sangue-vivo);
+  font-family: "Archivo", sans-serif;
+  font-size: var(--step--2);
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.08s ease-out;
+}
+.strike-go:hover { background: var(--sangue); color: var(--crema); border-color: var(--sangue); }
+.strike-go:active { transform: translateY(1px); }
+.course.is-printed .strike-go { border-color: var(--sangue); color: var(--sangue); }
+
 /* ---------------------------------------------------------- the seal */
 
 .seal {

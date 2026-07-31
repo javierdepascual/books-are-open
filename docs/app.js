@@ -49,6 +49,7 @@ let state = { claims: {} };   // { [courseId]: [ {id, name, dish, note, mode} ] 
 let openForm = null;          // courseId whose form is expanded
 let attemptKey = null;        // identifies one attempt, survives a retry
 let submitting = false;       // stops a second submit racing the first
+let striking = null;          // claim id being struck off, confirmed in the page
 let sealed = new Set();       // courses already stamped, so we only animate new ones
 let lit = new Set();          // courses already on paper, same reason
 let lastTaken = null;         // so the tally only reacts when it actually moves
@@ -190,6 +191,25 @@ function optionLines(course) {
   return `<ul class="options">${lines}</ul>`;
 }
 
+/* Confirming inside the card rather than through prompt(). A native dialog
+   is the one thing here that an in-app browser — which is where this link
+   gets opened — is entitled to refuse outright. */
+function strikeControl(course, c) {
+  if (striking !== c.id) {
+    return `<button class="seat-strike" data-strike="${esc(course.id)}" data-claim="${esc(c.id)}">break the oath</button>`;
+  }
+  return `
+    <div class="strike-confirm">
+      <label class="field-label" for="strike-${esc(c.id)}">Type the name to break it</label>
+      <input type="text" id="strike-${esc(c.id)}" class="strike-input" placeholder="${esc(c.name)}" autocomplete="off">
+      <p class="form-error" data-strike-error hidden></p>
+      <div class="strike-actions">
+        <button class="strike-go" data-strike-go="${esc(course.id)}" data-claim="${esc(c.id)}">Break it</button>
+        <button class="never-mind" data-strike-cancel>Keep it</button>
+      </div>
+    </div>`;
+}
+
 function seatRows(course) {
   const claims = state.claims[course.id] || [];
   const rows = [];
@@ -207,7 +227,7 @@ function seatRows(course) {
           ${c.note ? `<p class="seat-note">${esc(c.note)}</p>` : ""}
           ${c.mode === "money" ? `<span class="seat-mode">Jacky brings it</span>`
              : mode && mode.id !== "cooking" ? `<span class="seat-mode">${esc(mode.label)}</span>` : ""}
-          <button class="seat-strike" data-strike="${esc(course.id)}" data-claim="${esc(c.id)}">break the oath</button>
+          ${strikeControl(course, c)}
         </div>`;
     }).join("")}</div>`;
   }
@@ -223,7 +243,7 @@ function seatRows(course) {
         ${c.note ? `<p class="seat-note">${esc(c.note)}</p>` : ""}
         ${paid ? `<span class="seat-mode">Jacky brings it</span>`
                : mode && mode.id !== "cooking" ? `<span class="seat-mode">${esc(mode.label)}</span>` : ""}
-        <button class="seat-strike" data-strike="${esc(course.id)}" data-claim="${esc(c.id)}">break the oath</button>
+        ${strikeControl(course, c)}
       </div>`);
   });
 
@@ -431,23 +451,36 @@ $courses.addEventListener("click", async (e) => {
   const close = e.target.closest("[data-close]");
   if (close) { openForm = null; render(); return; }
 
+  const cancel = e.target.closest("[data-strike-cancel]");
+  if (cancel) { striking = null; render(); return; }
+
   const strike = e.target.closest("[data-strike]");
-  if (strike) {
-    const courseId = strike.dataset.strike;
-    const claimId = strike.dataset.claim;
+  if (strike) { striking = strike.dataset.claim; render(); return; }
+
+  const go = e.target.closest("[data-strike-go]");
+  if (go) {
+    const courseId = go.dataset.strikeGo;
+    const claimId = go.dataset.claim;
     const claim = (state.claims[courseId] || []).find((c) => c.id === claimId);
-    if (!claim) return;
-    const typed = prompt(`Type the name exactly as written to break the oath:\n\n${claim.name}`);
-    if (typed === null) return;
+    if (!claim) { striking = null; render(); return; }
+
+    const box = go.closest(".strike-confirm");
+    const err = box.querySelector("[data-strike-error]");
+    const typed = box.querySelector(".strike-input").value;
     if (typed.trim().toLowerCase() !== claim.name.trim().toLowerCase()) {
-      toast("That name doesn't match. Nothing was changed.");
+      err.textContent = "That name doesn't match, so nothing was changed.";
+      err.hidden = false;
       return;
     }
     try {
       state = await postRelease({ courseId, claimId });
+      striking = null;
       render();
       toast("The oath is broken. That seat is open again.");
-    } catch { toast("Couldn't reach the book. Try again."); }
+    } catch {
+      err.textContent = "Couldn't reach the book. Try again.";
+      err.hidden = false;
+    }
   }
 });
 
@@ -656,8 +689,8 @@ async function boot() {
   }
   try { state = await fetchState(); } catch { state = { claims: {} }; }
   render();
-  setInterval(() => { if (!openForm && !document.hidden) refresh(); }, 6000);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden && !openForm) refresh(); });
+  setInterval(() => { if (!openForm && !striking && !document.hidden) refresh(); }, 6000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && !openForm && !striking) refresh(); });
 }
 
 boot();
