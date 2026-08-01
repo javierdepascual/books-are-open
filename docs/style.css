@@ -206,7 +206,10 @@ body.intro-running { overflow: hidden; }
   letter-spacing: 0.04em;
 }
 .intro-word span {
-  font-size: clamp(3.2rem, 13vw, 6rem);
+  font-size: clamp(2.3rem, 9.5vw, 4.4rem);
+  line-height: 0.95;
+  max-width: 9ch;
+  text-wrap: balance;
 }
 @keyframes word-dissolve {
   0%   { opacity: 0; filter: blur(14px); transform: translateY(-16vh) scale(1.06); }
@@ -285,7 +288,13 @@ body.intro-running { overflow: hidden; }
   margin-bottom: -0.12em;
 }
 .wordmark-b i { font-style: italic; }
-.wordmark-c { font-size: 1.22em; }   /* one weight only: no faux bold */
+/* "Cosa Nostra" is eleven characters where "Oath" was four, so this is
+   sized to the name it actually carries and allowed to break in two. */
+.wordmark-c {
+  font-size: 0.92em;
+  line-height: 0.94;
+  text-wrap: balance;
+}
 
 .dek {
   margin: 1.5rem auto 0;

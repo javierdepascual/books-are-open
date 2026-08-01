@@ -23,7 +23,7 @@ const PARTY = {
   host:    "By invitation",
   name:    "An Italian potluck. Eight courses, one table.",
   when:    "Monday, August 17",
-  time:    "7:30 pm",
+  time:    "5:30 pm",
   where:   "Sandra's place, Gardena",
   signoff: "",
 };
@@ -157,7 +157,7 @@ function seal(course) {
       <textPath href="#${ringId}" startOffset="25%" text-anchor="middle">SWORN IN</textPath>
     </text>
     <text class="seal-ring">
-      <textPath href="#${ringId}" startOffset="75%" text-anchor="middle">THE OATH</textPath>
+      <textPath href="#${ringId}" startOffset="75%" text-anchor="middle">COSA NOSTRA</textPath>
     </text>
     <text class="seal-numeral" x="60" y="71" text-anchor="middle">${course.numeral}</text>
   </svg>`;
@@ -670,7 +670,6 @@ function strikeMatch() {
     intro.classList.add("is-done");
     document.body.classList.remove("intro-running");
     setTimeout(() => intro.remove(), 900);
-    try { localStorage.setItem("the-oath-intro", "1"); } catch (e) { /* private mode */ }
   };
 
   setTimeout(snuff, 3600);
