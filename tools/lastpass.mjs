@@ -13,7 +13,7 @@
 
 import { webkit, chromium, devices } from "playwright";
 
-const BASE = process.argv[2] || "https://javierdepascual.github.io/the-oath/";
+const BASE = process.argv[2] || "https://javierdepascual.github.io/la-cosa-nostra/";
 const API = "https://the-oath.javierdepascual.workers.dev";
 const ORIGIN = "https://javierdepascual.github.io";
 const BOOK = "lastpass";

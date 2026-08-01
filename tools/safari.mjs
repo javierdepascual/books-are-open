@@ -8,7 +8,7 @@
 
 import { webkit, devices } from "playwright";
 
-const URL_BASE = process.argv[2] || "https://javierdepascual.github.io/the-oath/";
+const URL_BASE = process.argv[2] || "https://javierdepascual.github.io/la-cosa-nostra/";
 const BOOK = process.argv[3] || "safaritest";
 const API = "https://the-oath.javierdepascual.workers.dev";
 

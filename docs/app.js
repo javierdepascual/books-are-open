@@ -90,7 +90,7 @@ async function postRelease(payload) {
 
 /* Browser-only fallback so the page is never dead. */
 const local = {
-  key: "the-oath",
+  key: "la-cosa-nostra",
   read() {
     try { return JSON.parse(localStorage.getItem(this.key)) || { claims: {} }; }
     catch { return { claims: {} }; }

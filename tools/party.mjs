@@ -11,7 +11,7 @@
 
 import { webkit, devices } from "playwright";
 
-const BASE = process.argv[2] || "https://javierdepascual.github.io/the-oath/";
+const BASE = process.argv[2] || "https://javierdepascual.github.io/la-cosa-nostra/";
 const BOOK = process.argv[3] || "partynight";
 const API = "https://the-oath.javierdepascual.workers.dev";
 const ORIGIN = "https://javierdepascual.github.io";

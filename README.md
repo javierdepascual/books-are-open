@@ -1,7 +1,7 @@
-# The Oath
+# La Cosa Nostra
 
-**Live:** https://javierdepascual.github.io/the-oath/
-**Short link:** https://tinyurl.com/the-oath-party
+**Live:** https://javierdepascual.github.io/la-cosa-nostra/
+**Short link:** https://tinyurl.com/la-cosa-nostra
 
 A potluck sign-up for an Italian dinner on Monday 17 August, 7:30 pm.
 Eight courses, ten seats. Anyone with the link can swear to one; nobody
