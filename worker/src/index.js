@@ -11,30 +11,7 @@
               bring three. The name shows against the line.
    ============================================================ */
 
-// The rules live here as well as in the browser. The browser can't be trusted.
-const COURSES = {
-  pane:     { seats: 1 },
-  primo:    { seats: 2 },
-  secondo:  { seats: 2 },
-  insalata: { seats: 1 },
-  dolce:    { seats: 1 },
-
-  antipasto: { items: [
-    "Salami, prosciutto, cheeses, mozzarella",
-    "Olives, roasted peppers, artichokes",
-    "Crackers and bread",
-  ] },
-  vino: { items: [
-    "Three bottles of red",
-    "One bottle of white, rosé or Prosecco",
-  ] },
-  bibite: { items: [
-    "Sparkling water",
-    "Italian sodas, regular sodas",
-    "Ice",
-    "Lemons and oranges",
-  ] },
-};
+import { COURSES } from "./menu.js";
 
 const ALLOWED = [
   /^https:\/\/[a-z0-9-]+\.github\.io$/i,
