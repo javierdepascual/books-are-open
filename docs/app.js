@@ -19,14 +19,9 @@ const newKey = () => (crypto.randomUUID
   ? crypto.randomUUID()
   : "k" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
 
-const PARTY = {
-  host:    "By invitation",
-  name:    "An Italian potluck. Eight courses, one table.",
-  when:    "Monday, August 17",
-  time:    "5:30 pm",
-  where:   "Sandra's place, Gardena",
-  signoff: "",
-};
+/* PARTY, MODES and COURSES all come from courses.js, generated from
+   config/event.json. Declaring them here again is a duplicate const,
+   which kills the whole script. */
 
 const TOTAL_SEATS = COURSES.reduce((n, c) => n + sizeOf(c), 0);
 
